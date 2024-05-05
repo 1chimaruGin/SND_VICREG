@@ -4,6 +4,7 @@ import lightning as L
 from RunningAverage import FabricRunningStats
 from RNDModelAtari import VICRegModelAtari
 
+
 class SNDMotivationLightning(L.LightningModule):
     def __init__(self, network: VICRegModelAtari, learning_rate: float, eta: int = 1):
         super().__init__()
@@ -22,12 +23,24 @@ class SNDMotivationLightning(L.LightningModule):
         loss = self.network.loss_function(states, next_states)
         return loss
 
-    def forward(self, state):
+    def forward(
+        self,
+        state,
+        error_flag=False,
+    ):
+        if error_flag:
+            with torch.no_grad():
+                prediction, target = self.network(state)
+                error = self.network.k_distance(
+                    self.network.config.cnd_error_k, prediction, target, reduction="mean"
+                )
+                reward = error * self.eta
+                return error, reward
         return self.network(state)
-    
+
     def error(self, state):
         with torch.no_grad():
-            prediction, target = self(state)
+            prediction, target = self.network(state)
             error = self.network.k_distance(
                 self.network.config.cnd_error_k, prediction, target, reduction="mean"
             )
