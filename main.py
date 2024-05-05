@@ -43,10 +43,6 @@ if __name__ == "__main__":
     torch.backends.cudnn.deterministic = True
 
     # Log hyperparameters
-    fabric.logger.experiment.add_text(
-        "hyperparameters",
-        "|param|value|\n|-|-|\n%s" % ("\n".join([f"|{key}|{value}|" for key, value in vars(args).items()])),
-    )
 
     env_name = args.env_name
     # PPO_HardAtariGame.run_snd_model(args, 0, env_name)
