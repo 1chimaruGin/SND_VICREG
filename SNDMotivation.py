@@ -5,7 +5,7 @@ from RunningAverage import FabricRunningStats
 from RNDModelAtari import VICRegModelAtari
 
 
-class SNDMotivationLightning(L.LightningModule):
+class SNDMotivationLightning(torch.nn.Module):
     def __init__(self, network: VICRegModelAtari, learning_rate: float, eta: int = 1):
         super().__init__()
         self.network = network
