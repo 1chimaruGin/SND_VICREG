@@ -41,7 +41,7 @@ class PPOAtariSNDAgent:
         )
         motivation = SNDMotivationLightning(
             network=self.cnd_model,
-            lr=config.motivation_lr,
+            learning_rate=config.motivation_lr,
             eta=config.motivation_eta,
         )
         motivation, motivation_optimizer = self.fabric_agent(fabric, motivation)
