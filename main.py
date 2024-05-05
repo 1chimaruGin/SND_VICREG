@@ -40,7 +40,7 @@ if __name__ == "__main__":
     device = fabric.device
     print(f"rank: {rank}, world_size: {world_size}, device: {device}")
     fabric.seed_everything(args.seed)
-    torch.backends.cudnn.deterministic = args.torch_deterministic
+    torch.backends.cudnn.deterministic = True
 
     # Log hyperparameters
     fabric.logger.experiment.add_text(
