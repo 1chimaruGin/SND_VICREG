@@ -1,11 +1,12 @@
 import time
 import torch
+import torch.nn as nn
 import lightning as L
+from ResultCollector import ResultCollector
 from RunningAverage import FabricRunningStats
 from RNDModelAtari import VICRegModelAtari
 
-
-class SNDMotivationLightning(torch.nn.Module):
+class SNDMotivationLightning(L.LightningModule):
     def __init__(self, network: VICRegModelAtari, learning_rate: float, eta: int = 1):
         super().__init__()
         self.network = network
@@ -16,27 +17,31 @@ class SNDMotivationLightning(torch.nn.Module):
     def configure_optimizers(self) -> torch.optim.Optimizer:
         optimizer = torch.optim.Adam(self.network.parameters(), lr=self.learning_rate)
         return optimizer
+    
+    def forward(self, state):
+        return self.network(state)
+    
+    def loss_function(self, state, next_state):
+        prediction, target = self(state)
+        loss_prediction = nn.functional.mse_loss(
+            prediction, target.detach(), reduction="mean"
+        )
+        loss_target = self.network.target_model.loss_function(
+            self.network.preprocess(state), self.network.preprocess(next_state)
+        )
+
+        analytic = ResultCollector()
+        analytic.update(
+            loss_prediction=loss_prediction.unsqueeze(-1).detach(),
+            loss_target=loss_target.unsqueeze(-1).detach(),
+        )
+        return loss_prediction + loss_target
 
     def training_step(self, batch, idx):
         states = batch.state[idx]
         next_states = batch.next_state[idx]
         loss = self.network.loss_function(states, next_states)
         return loss
-
-    # def train(self, memory, indices):
-    #     if indices:
-    #         start = time.time()
-    #         sample, size = memory.sample_batches(indices)
-    #         for i in range(size):
-    #             states = sample.state[i]
-    #             next_states = sample.next_state[i]
-    #             self.optimizer.zero_grad()
-    #             loss = self.network.loss_function(states, next_states)
-    #             loss.backward()
-    #             self.optimizer.step()
-
-    #         end = time.time()
-    #         print("CND motivation training time {0:.2f}s".format(end - start))
 
     def error(self, state0):
         return self.network.error(state0)
