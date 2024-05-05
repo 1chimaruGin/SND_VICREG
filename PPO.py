@@ -1,11 +1,8 @@
-import time
 import torch
 import lightning as L
-from lightning.fabric import Fabric
 from torchmetrics import MeanMetric
 from enum import Enum
 from typing import Dict
-from ReplayBuffer import GenericTrajectoryBuffer
 
 
 class MODE(Enum):
@@ -100,7 +97,7 @@ class PPOLightning(L.LightningModule):
         adv_values = batch["adv_values"]
         ref_values = batch["ref_values"]
         batch_ofs = batch["batch_ofs"]
-        batch_l = batch_ofs + self._batch_size
+        batch_l = batch_ofs + self.batch_size
         states_v = states[batch_ofs:batch_l]
         actions_v = actions[batch_ofs:batch_l]
         probs_v = probs[batch_ofs:batch_l]
@@ -120,77 +117,3 @@ class PPOLightning(L.LightningModule):
     def configure_optimizers(self) -> torch.optim.Optimizer:
         optimizer = torch.optim.Adam(self.network.parameters(), lr=self.learning_rate)
         return optimizer
-
-
-def train_ppo_lightning(
-    fabric: Fabric,
-    agent: PPOLightning,
-    optimizer: torch.optim.Optimizer,
-    memory: GenericTrajectoryBuffer,
-    indices: torch.Tensor,
-    global_step: int = 0,
-):
-    if indices:
-        start = time.time()
-        sample = memory.sample(indices, False)
-        states = sample.state
-        values = sample.value
-        actions = sample.action
-        probs = sample.prob
-        rewards = sample.reward
-        dones = sample.mask
-        if agent._motivation:
-            ext_reward = rewards[:, :, 0].unsqueeze(-1)
-            int_reward = rewards[:, :, 1].unsqueeze(-1)
-
-            ext_ref_values, ext_adv_values = agent.calc_advantage(
-                values[:, :, 0].unsqueeze(-1),
-                ext_reward,
-                dones,
-                agent._gamma[0],
-                agent._n_env,
-            )
-            int_ref_values, int_adv_values = agent.calc_advantage(
-                values[:, :, 1].unsqueeze(-1),
-                int_reward,
-                dones,
-                agent.gamma[1],
-                agent.n_env,
-            )
-            ref_values = torch.cat([ext_ref_values, int_ref_values], dim=2)
-
-            adv_values = (
-                ext_adv_values * agent.ext_adv_scale
-                + int_adv_values * agent.int_adv_scale
-            )
-
-        else:
-            ref_values, adv_values = agent.calc_advantage(
-                values, rewards, dones, agent.gamma[0], agent.n_env
-            )
-            adv_values *= agent.ext_adv_scale
-
-        permutation = torch.randperm(agent.trajectory_size)
-
-        states = states.reshape(-1, *states.shape[2:])[permutation]
-        actions = actions.reshape(-1, *actions.shape[2:])[permutation]
-        probs = probs.reshape(-1, *probs.shape[2:])[permutation]
-        adv_values = adv_values.reshape(-1, *adv_values.shape[2:])[permutation]
-        ref_values = ref_values.reshape(-1, *ref_values.shape[2:])[permutation]
-        batch = {
-            "states": states,
-            "actions": actions,
-            "probs": probs,
-            "adv_values": adv_values,
-            "ref_values": ref_values,
-        }
-        for _ in range(agent.ppo_epochs):
-            for batch_ofs in range(0, agent.trajectory_size, agent.batch_size):
-                batch["batch_ofs"] = batch_ofs
-                loss = agent.training_step(batch)
-                optimizer.zero_grad()
-                fabric.backward(loss)
-                fabric.clip_gradients(agent, optimizer, max_norm=0.5)
-                optimizer.step()
-        end = time.time()
-        print("PPO training time {0:.2f}s".format(end - start))

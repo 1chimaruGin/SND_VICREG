@@ -1,24 +1,25 @@
+import time
 import torch
+import argparse
 import lightning as L
-from PPO import PPO
+from lightning.fabric import Fabric
+from PPO_Modules import TYPE
+from PPO import PPOLightning
+from RNDModelAtari import VICRegModelAtari
+from SNDMotivation import SNDMotivationLightning
 from ReplayBuffer import GenericTrajectoryBuffer
 from PPO_AtariModules import PPOAtariNetworkSND
-from PPO_Modules import TYPE
-from PPO import PPOLightning, train_ppo_lightning
 from ReplayBuffer import GenericTrajectoryBuffer
-
-from SNDMotivation import SNDMotivation
-from RNDModelAtari import VICRegModelAtari
 
 
 class PPOAtariSNDAgent:
     def __init__(
         self,
-        state_dim,
-        action_dim,
-        config,
-        action_type,
-        fabric,
+        state_dim: int,
+        action_dim: int,
+        config: argparse.Namespace,
+        action_type: TYPE,
+        fabric: Fabric,
     ):
         self.state_dim = state_dim
         self.action_dim = action_dim
@@ -38,12 +39,14 @@ class PPOAtariSNDAgent:
         self.cnd_model = VICRegModelAtari(state_dim, action_dim, config).to(
             config.device
         )
-        self.motivation = SNDMotivation(
+        motivation = SNDMotivationLightning(
             network=self.cnd_model,
             lr=config.motivation_lr,
             eta=config.motivation_eta,
-            device=config.device,
         )
+        motivation, motivation_optimizer = self.fabric_agent(fabric, motivation)
+        self.motivation = motivation
+        self.motivation_optimizer = motivation_optimizer
 
         algorithm = PPOLightning(
             network=self.network,
@@ -60,14 +63,15 @@ class PPOAtariSNDAgent:
             n_env=config.n_env,
             motivation=True,
         )
-        algorithm_optimizer = algorithm.configure_optimizers()
-        algorithm, algorithm_optimizer = fabric.setup(algorithm, algorithm_optimizer)
+        algorithm, algorithm_optimizer = self.fabric_agent(fabric, algorithm)
         self.algorithm = algorithm
         self.algorithm_optimizer = algorithm_optimizer
+        self.fabric = fabric
 
-        # if config.gpus and len(config.gpus) > 1:
-        #     config.batch_size *= len(config.gpus)
-        #     self.network = nn.DataParallel(self.network, config.gpus)
+    def fabric_agent(self, fabric: Fabric, agent: L.LightningModule):
+        optimizer = agent.configure_optimizers()
+        agent, optimizer = fabric.setup(agent, optimizer)
+        return agent, optimizer
 
     def get_action(self, state):
         value, action, probs = self.network(state)
@@ -83,6 +87,89 @@ class PPOAtariSNDAgent:
             return action.squeeze(0).numpy()
         if self.action_type == TYPE.multibinary:
             return torch.argmax(action, dim=1).numpy()
+
+    def prepare_ppo_training(
+        self, memory: GenericTrajectoryBuffer, indices: torch.Tensor
+    ):
+        sample = memory.sample(indices, False)
+        states = sample.state
+        values = sample.value
+        actions = sample.action
+        probs = sample.prob
+        rewards = sample.reward
+        dones = sample.mask
+        if self.algorithm.motivation:
+            ext_reward = rewards[:, :, 0].unsqueeze(-1)
+            int_reward = rewards[:, :, 1].unsqueeze(-1)
+            ext_ref_values, ext_adv_values = self.algorithm.calc_advantage(
+                values[:, :, 0].unsqueeze(-1),
+                ext_reward,
+                dones,
+                self.algorithm.gamma[0],
+                self.algorithm.n_env,
+            )
+            int_ref_values, int_adv_values = self.algorithm.calc_advantage(
+                values[:, :, 1].unsqueeze(-1),
+                int_reward,
+                dones,
+                self.algorithm.gamma[1],
+                self.algorithm.n_env,
+            )
+            ref_values = torch.cat([ext_ref_values, int_ref_values], dim=2)
+            adv_values = (
+                ext_adv_values * self.algorithm.ext_adv_scale
+                + int_adv_values * self.algorithm.int_adv_scale
+            )
+        else:
+            ref_values, adv_values = self.algorithm.calc_advantage(
+                values, rewards, dones, self.algorithm.gamma[0], self.algorithm.n_env
+            )
+            adv_values *= self.algorithm.ext_adv_scale
+
+        permutation = torch.randperm(self.algorithm.trajectory_size)
+        states = states.reshape(-1, *states.shape[2:])[permutation]
+        actions = actions.reshape(-1, *actions.shape[2:])[permutation]
+        probs = probs.reshape(-1, *probs.shape[2:])[permutation]
+        adv_values = adv_values.reshape(-1, *adv_values.shape[2:])[permutation]
+        ref_values = ref_values.reshape(-1, *ref_values.shape[2:])[permutation]
+        batch = {
+            "states": states,
+            "actions": actions,
+            "probs": probs,
+            "adv_values": adv_values,
+            "ref_values": ref_values,
+        }
+        return batch
+
+    def train_ppo(self, batch):
+        for _ in range(self.algorithm.ppo_epochs):
+            for batch_ofs in range(
+                0, self.algorithm.trajectory_size, self.algorithm.batch_size
+            ):
+                batch["batch_ofs"] = batch_ofs
+                loss = self.algorithm.training_step(batch)
+                self.algorithm_optimizer.zero_grad()
+                self.fabric.backward(loss)
+                self.fabric.clip_gradients(
+                    self.algorithm, self.algorithm_optimizer, max_norm=0.5
+                )
+                self.algorithm_optimizer.step()
+
+    def train_snd(self, batch):
+        sample, size = batch
+        for _ in range(size):
+            motivation_loss = self.motivation.training_step(sample)
+            self.motivation_optimizer.zero_grad()
+            self.fabric.backward(motivation_loss)
+            self.fabric.clip_gradients(
+                self.motivation, self.motivation_optimizer, max_norm=0.5
+            )
+            self.motivation_optimizer.step()
+
+    def prepare_snd_training(
+        self, memory: GenericTrajectoryBuffer, indices: torch.Tensor
+    ):
+        return memory.sample_batches(indices)
 
     def train(self, state0, value, action0, probs0, state1, reward, mask):
         self.memory.add(
@@ -101,17 +188,24 @@ class PPOAtariSNDAgent:
         motivation_indices = self.motivation_memory.indices()
 
         if indices is not None:
-            train_ppo_lightning(
-                self.algorithm,
-                self.algorithm_optimizer,
-                self.memory,
-                indices,
-            )
+            start = time.time()
+            batch = self.prepare_ppo_training(self.memory, indices)
+            self.train_ppo(batch)
+            end = time.time()
+            print(f"[INFO] PPO training time: {end - start}s")
             # self.algorithm.train(self.memory, indices)
             self.memory.clear()
 
         if motivation_indices is not None:
-            self.motivation.train(self.motivation_memory, motivation_indices)
+            start = time.time()
+            sample, size = self.prepare_snd_training(
+                self.motivation_memory, motivation_indices
+            )
+            for i in range(size):
+                self.train_snd(sample, i)
+            end = time.time()
+            print(f"[INFO] CND training time: {end - start}s")
+            # self.motivation.train(self.motivation_memory, motivation_indices)
             self.motivation_memory.clear()
 
     def save(self, path):
@@ -119,5 +213,3 @@ class PPOAtariSNDAgent:
 
     def load(self, path):
         self.network.load_state_dict(torch.load(path + ".pth", map_location="cpu"))
-
-

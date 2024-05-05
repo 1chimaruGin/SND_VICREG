@@ -231,7 +231,6 @@ class VICRegModelAtari(nn.Module):
             error = self.k_distance(
                 self.config.cnd_error_k, prediction, target, reduction="mean"
             )
-
         return error
 
     def loss_function(self, state, next_state):
