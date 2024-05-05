@@ -157,8 +157,8 @@ class PPOAtariSNDAgent:
 
     def train_snd(self, batch):
         sample, size = batch
-        for _ in range(size):
-            motivation_loss = self.motivation.training_step(sample)
+        for i in range(size):
+            motivation_loss = self.motivation.training_step(sample, i)
             self.motivation_optimizer.zero_grad()
             self.fabric.backward(motivation_loss)
             self.fabric.clip_gradients(
@@ -198,11 +198,10 @@ class PPOAtariSNDAgent:
 
         if motivation_indices is not None:
             start = time.time()
-            sample, size = self.prepare_snd_training(
+            batch = self.prepare_snd_training(
                 self.motivation_memory, motivation_indices
             )
-            for i in range(size):
-                self.train_snd(sample, i)
+            self.train_snd(batch)
             end = time.time()
             print(f"[INFO] CND training time: {end - start}s")
             # self.motivation.train(self.motivation_memory, motivation_indices)

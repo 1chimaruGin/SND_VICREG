@@ -107,7 +107,6 @@ class VICRegEncoderAtari(nn.Module):
         y_b = self.augment(next_states)
         z_a = self.encoder(y_a)
         z_b = self.encoder(y_b)
-
         inv_loss = nn.functional.mse_loss(z_a, z_b)
 
         std_z_a = torch.sqrt(z_a.var(dim=0) + 1e-04)
@@ -222,7 +221,6 @@ class VICRegModelAtari(nn.Module):
     def forward(self, state):
         predicted_code = self.model(self.preprocess(state))
         target_code = self.target_model(self.preprocess(state))
-
         return predicted_code, target_code
 
     def error(self, state):
@@ -235,7 +233,6 @@ class VICRegModelAtari(nn.Module):
 
     def loss_function(self, state, next_state):
         prediction, target = self(state)
-
         loss_prediction = nn.functional.mse_loss(
             prediction, target.detach(), reduction="mean"
         )
