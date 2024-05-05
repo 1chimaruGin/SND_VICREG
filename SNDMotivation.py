@@ -1,8 +1,6 @@
 import time
 import torch
-import torch.nn as nn
 import lightning as L
-from ResultCollector import ResultCollector
 from RunningAverage import FabricRunningStats
 from RNDModelAtari import VICRegModelAtari
 
@@ -17,25 +15,6 @@ class SNDMotivationLightning(L.LightningModule):
     def configure_optimizers(self) -> torch.optim.Optimizer:
         optimizer = torch.optim.Adam(self.network.parameters(), lr=self.learning_rate)
         return optimizer
-    
-    def forward(self, state):
-        return self.network(state)
-    
-    def loss_function(self, state, next_state):
-        prediction, target = self(state)
-        loss_prediction = nn.functional.mse_loss(
-            prediction, target.detach(), reduction="mean"
-        )
-        loss_target = self.network.target_model.loss_function(
-            self.network.preprocess(state), self.network.preprocess(next_state)
-        )
-
-        analytic = ResultCollector()
-        analytic.update(
-            loss_prediction=loss_prediction.unsqueeze(-1).detach(),
-            loss_target=loss_target.unsqueeze(-1).detach(),
-        )
-        return loss_prediction + loss_target
 
     def training_step(self, batch, idx):
         states = batch.state[idx]
@@ -43,8 +22,16 @@ class SNDMotivationLightning(L.LightningModule):
         loss = self.network.loss_function(states, next_states)
         return loss
 
+    def forward(self, state):
+        return self.network(state)
+    
     def error(self, state0):
-        return self.network.error(state0)
+        with torch.no_grad():
+            prediction, target = self.forward(state0)
+            error = self.network.k_distance(
+                self.network.config.cnd_error_k, prediction, target, reduction="mean"
+            )
+        return error
 
     def reward_sample(self, memory, indices):
         sample = memory.sample(indices)
