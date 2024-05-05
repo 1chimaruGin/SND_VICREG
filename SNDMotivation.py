@@ -25,9 +25,9 @@ class SNDMotivationLightning(L.LightningModule):
     def forward(self, state):
         return self.network(state)
     
-    def error(self, state0):
+    def error(self, state):
         with torch.no_grad():
-            prediction, target = self.forward(state0)
+            prediction, target = self(state)
             error = self.network.k_distance(
                 self.network.config.cnd_error_k, prediction, target, reduction="mean"
             )
