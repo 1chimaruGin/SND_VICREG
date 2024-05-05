@@ -11,7 +11,9 @@ class GenericCollector:
         self._n_env = 0
         self._buffer = {}
 
-        self._simple_stats = namedtuple('simple_stats', ['step', 'max', 'sum', 'mean', 'std'])
+        self._simple_stats = namedtuple(
+            "simple_stats", ["step", "max", "sum", "mean", "std"]
+        )
 
     def init(self, n_env, **kwargs):
         self._n_env = n_env
@@ -20,12 +22,12 @@ class GenericCollector:
 
     def add(self, key, shape):
         self.keys.append(key)
-        self._buffer[key] = RunningStats(shape, 'cpu', n=self._n_env)
+        self._buffer[key] = RunningStats(shape, "cpu", n=self._n_env)
 
     def update(self, **kwargs):
         for k in kwargs:
             if k in self._buffer:
-                self._buffer[k].update(kwargs[k], reduction='none')
+                self._buffer[k].update(kwargs[k], reduction="none")
 
     def reset(self, indices):
         result = {}
@@ -40,7 +42,13 @@ class GenericCollector:
         return result
 
     def _evaluate(self, key, index):
-        return [self._buffer[key].count[index].item() - 1, self._buffer[key].max[index].item(), self._buffer[key].sum[index].item(), self._buffer[key].mean[index].item(), self._buffer[key].std[index].item()]
+        return [
+            self._buffer[key].count[index].item() - 1,
+            self._buffer[key].max[index].item(),
+            self._buffer[key].sum[index].item(),
+            self._buffer[key].mean[index].item(),
+            self._buffer[key].std[index].item(),
+        ]
 
     def clear(self):
         self.keys.clear()

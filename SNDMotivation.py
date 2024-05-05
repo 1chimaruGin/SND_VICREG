@@ -1,13 +1,10 @@
 import time
-
 import torch
-
 from RunningAverage import RunningStats
 
 
-
 class SNDMotivation:
-    def __init__(self, network, lr, eta=1, device='cpu'):
+    def __init__(self, network, lr, eta=1, device="cpu"):
         self._network = network
         self._optimizer = torch.optim.Adam(self._network.parameters(), lr=lr)
         self._eta = eta
@@ -50,4 +47,3 @@ class SNDMotivation:
 
     def update_reward_average(self, reward):
         self.reward_stats.update(reward.to(self._device))
-

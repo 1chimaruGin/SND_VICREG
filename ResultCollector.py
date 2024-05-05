@@ -11,7 +11,7 @@ class ResultCollector:
 
     def __new__(cls):
         if cls._instance is None:
-            print('Creating the object ResultCollector')
+            print("Creating the object ResultCollector")
             cls._instance = super(ResultCollector, cls).__new__(cls)
             cls._instance.collector = GenericCollector()
             cls._instance.global_step = 0
@@ -50,7 +50,15 @@ class ResultCollector:
             result = self.collector.reset(indices)
 
             for k in self.collector.keys:
-                self.collector_values[k].append((result[k].step, result[k].sum, result[k].max, result[k].mean, result[k].std))
+                self.collector_values[k].append(
+                    (
+                        result[k].step,
+                        result[k].sum,
+                        result[k].max,
+                        result[k].mean,
+                        result[k].std,
+                    )
+                )
 
         return result
 
@@ -61,10 +69,16 @@ class ResultCollector:
         data = {}
 
         for k in self.collector_values.keys():
-            data[k] = self._finalize_value(self.collector_values[k], ['step', 'sum', 'max', 'mean', 'std'], mode='cumsum_step')
+            data[k] = self._finalize_value(
+                self.collector_values[k],
+                ["step", "sum", "max", "mean", "std"],
+                mode="cumsum_step",
+            )
 
         for k in self.global_values.keys():
-            data[k] = self._finalize_value(self.global_values[k], ['step', 'val'], mode='mean_step')
+            data[k] = self._finalize_value(
+                self.global_values[k], ["step", "val"], mode="mean_step"
+            )
 
         return data
 
@@ -85,14 +99,14 @@ class ResultCollector:
     def _finalize_value(value, keys, mode):
         result = {}
 
-        if mode == 'cumsum_step':
+        if mode == "cumsum_step":
             l = tuple(map(list, zip(*value)))
             for i, k in enumerate(keys):
                 result[k] = np.array(list(itertools.chain(*l[i])))
 
-            result['step'] = np.cumsum(result['step'])
+            result["step"] = np.cumsum(result["step"])
 
-        if mode == 'mean_step':
+        if mode == "mean_step":
             l = []
             for steps in value:
                 val = sum(value[steps]) / len(value[steps])
@@ -105,18 +119,26 @@ class ResultCollector:
         return result
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     analytic = ResultCollector()
 
     analytic.init(8, ext_reward=(1,), int_reward=(1,), error=(1,), score=(1,))
     for i in range(10):
-        analytic.update(ext_reward=torch.rand((8, 1)), int_reward=torch.rand((8, 1)), error=torch.rand((8, 1)),
-                        score=torch.rand((8, 1)))
+        analytic.update(
+            ext_reward=torch.rand((8, 1)),
+            int_reward=torch.rand((8, 1)),
+            error=torch.rand((8, 1)),
+            score=torch.rand((8, 1)),
+        )
         analytic.end_step()
     analytic.reset([1, 3])
     for i in range(4):
-        analytic.update(ext_reward=torch.rand((8, 1)), int_reward=torch.rand((8, 1)), error=torch.rand((8, 1)),
-                        score=torch.rand((8, 1)))
+        analytic.update(
+            ext_reward=torch.rand((8, 1)),
+            int_reward=torch.rand((8, 1)),
+            error=torch.rand((8, 1)),
+            score=torch.rand((8, 1)),
+        )
         analytic.end_step()
     analytic.reset([0, 1, 2])
     analytic.finalize()

@@ -32,7 +32,9 @@ class MaxAndSkipEnv(gym.Wrapper):
     def __init__(self, env, skip=4):
         gym.Wrapper.__init__(self, env)
 
-        self._obs_buffer = numpy.zeros((2,) + env.observation_space.shape, dtype=numpy.uint8)
+        self._obs_buffer = numpy.zeros(
+            (2,) + env.observation_space.shape, dtype=numpy.uint8
+        )
         self._skip = skip
 
     def step(self, action):
@@ -40,15 +42,21 @@ class MaxAndSkipEnv(gym.Wrapper):
         done = None
         for i in range(self._skip):
             obs, reward, done, info = self.env.step(action)
-            if i == self._skip - 2: self._obs_buffer[0] = obs
-            if i == self._skip - 1: self._obs_buffer[1] = obs
+            if i == self._skip - 2:
+                self._obs_buffer[0] = obs
+            if i == self._skip - 1:
+                self._obs_buffer[1] = obs
             total_reward += reward
             if done:
                 break
 
         max_frame = self._obs_buffer.max(axis=0)
         return max_frame, total_reward, done, info
+
+
 import numpy as np
+
+
 def create_hollow_square_mask(height, width, thickness):
     mask = np.zeros((height, width), dtype=np.uint8)
     mask[thickness:-thickness, thickness:-thickness] = 1
@@ -60,6 +68,8 @@ def create_hollow_square_mask(height, width, thickness):
 
 
 import matplotlib.pyplot as plt
+
+
 class ResizeEnv(gym.ObservationWrapper):
     def __init__(self, env, height=96, width=96, frame_stacking=4):
         super(ResizeEnv, self).__init__(env)
@@ -70,10 +80,12 @@ class ResizeEnv(gym.ObservationWrapper):
         state_shape = (self.frame_stacking, self.height, self.width)
         self.dtype = numpy.float32
 
-        self.observation_space = gym.spaces.Box(low=0.0, high=1.0, shape=state_shape, dtype=self.dtype)
+        self.observation_space = gym.spaces.Box(
+            low=0.0, high=1.0, shape=state_shape, dtype=self.dtype
+        )
         self.state = numpy.zeros(state_shape, dtype=self.dtype)
         # self.fig, self.ax = plt.subplots()
-        # plt.ion()  # Turn on interactive mode        
+        # plt.ion()  # Turn on interactive mode
 
     # def observation(self, state):
     #     img = Image.fromarray(state)
@@ -88,10 +100,11 @@ class ResizeEnv(gym.ObservationWrapper):
 
     def observation(self, state):
         import matplotlib.pyplot as plt
+
         img = Image.fromarray(state)
-        img = img.convert('L')
+        img = img.convert("L")
         img = img.resize((self.height, self.width))
-        
+
         # Applying the hollow square mask
         # thickness = 2
         # mask = create_hollow_square_mask(self.height, self.width, 10)
@@ -108,18 +121,18 @@ class ResizeEnv(gym.ObservationWrapper):
         # plt.imshow(img_arr, cmap='gray')
         # plt.title('Processed Image Array')
         # plt.colorbar()
-        # plt.show()       
+        # plt.show()
         # self.ax.imshow(img_arr, cmap='gray')
         # # self.ax.set_title(f'Processed Image Array - Frame ')
         # # plt.colorbar(self.ax.imshow(img_arr, cmap='gray'), ax=self.ax)
         # plt.draw()
-        # plt.pause(0.1)         
-        
+        # plt.pause(0.1)
+
         for i in reversed(range(self.frame_stacking - 1)):
             self.state[i + 1] = self.state[i].copy()
-        self.state[0] = (img_arr.astype(self.dtype) / 255.0).copy()       
+        self.state[0] = (img_arr.astype(self.dtype) / 255.0).copy()
 
-        return self.state    
+        return self.state
 
 
 class FireResetEnv(gym.Wrapper):
@@ -156,7 +169,7 @@ class EpisodicLifeEnv(gym.Wrapper):
 
     def step(self, action):
         obs, reward, done, info = self.env.step(action)
-        info['raw_score'] = reward
+        info["raw_score"] = reward
         self.was_real_done = done
 
         self.raw_score += reward
@@ -166,7 +179,9 @@ class EpisodicLifeEnv(gym.Wrapper):
             k = 0.1
 
             self.raw_episodes += 1
-            self.raw_score_per_episode = (1.0 - k) * self.raw_score_per_episode + k * self.raw_score
+            self.raw_score_per_episode = (
+                1.0 - k
+            ) * self.raw_score_per_episode + k * self.raw_score
             self.raw_score = 0.0
 
         if self.dense_rewards < numpy.random.rand():
@@ -218,7 +233,9 @@ class StickyActionEnv(gym.Wrapper):
 class RepeatActionEnv(gym.Wrapper):
     def __init__(self, env):
         gym.Wrapper.__init__(self, env)
-        self.successive_frame = numpy.zeros((2,) + self.env.observation_space.shape, dtype=numpy.uint8)
+        self.successive_frame = numpy.zeros(
+            (2,) + self.env.observation_space.shape, dtype=numpy.uint8
+        )
 
     def reset(self, **kwargs):
         return self.env.reset(**kwargs)
@@ -237,6 +254,7 @@ class RepeatActionEnv(gym.Wrapper):
 
         state = self.successive_frame.max(axis=0)
         return state, reward, done, info
+
 
 class VisitedRoomInfo(gym.Wrapper):
     """Add number of unique visited rooms to the info dictionary.
@@ -259,8 +277,8 @@ class VisitedRoomInfo(gym.Wrapper):
         self.unique_rooms = self.unique_rooms.union(self.visited_rooms)
         self.visited_rooms.add(self.get_current_room())
         if done:
-            info['episode_visited_rooms'] = len(self.visited_rooms)
-            info['max_unique_rooms'] = len(self.unique_rooms)
+            info["episode_visited_rooms"] = len(self.visited_rooms)
+            info["max_unique_rooms"] = len(self.unique_rooms)
             self.visited_rooms.clear()
         return obs, rew, done, info
 
@@ -279,7 +297,7 @@ class RawScoreEnv(gym.Wrapper):
 
     def step(self, action):
         obs, reward, done, info = self.env.step(action)
-        info['raw_score'] = reward
+        info["raw_score"] = reward
 
         self.steps += 1
         if self.steps >= self.max_steps:
@@ -293,10 +311,12 @@ class RawScoreEnv(gym.Wrapper):
             self.raw_episodes += 1
 
             k = 0.1
-            self.raw_score_per_episode = (1.0 - k) * self.raw_score_per_episode + k * self.raw_score
+            self.raw_score_per_episode = (
+                1.0 - k
+            ) * self.raw_score_per_episode + k * self.raw_score
             self.raw_score = 0.0
 
-        reward = max(0., float(numpy.sign(reward)))
+        reward = max(0.0, float(numpy.sign(reward)))
 
         return obs, reward, done, info
 
@@ -306,7 +326,15 @@ class RawScoreEnv(gym.Wrapper):
         return self.env.reset()
 
 
-def WrapperAtari(env, height=96, width=96, frame_stacking=4, frame_skipping=4, reward_scale=1.0, dense_rewards=1.0):
+def WrapperAtari(
+    env,
+    height=96,
+    width=96,
+    frame_stacking=4,
+    frame_skipping=4,
+    reward_scale=1.0,
+    dense_rewards=1.0,
+):
     env = NopOpsEnv(env)
     env = FireResetEnv(env)
     env = MaxAndSkipEnv(env, frame_skipping)
@@ -315,32 +343,36 @@ def WrapperAtari(env, height=96, width=96, frame_stacking=4, frame_skipping=4, r
 
     return env
 
+
 def unwrap(env):
-    if hasattr(env, 'unwrapped'):
+    if hasattr(env, "unwrapped"):
         return env.unwrapped
-    elif hasattr(env, 'env'):
+    elif hasattr(env, "env"):
         return unwrap(env.env)
-    elif hasattr(env, 'leg_env'):
+    elif hasattr(env, "leg_env"):
         return unwrap(env.leg_env)
     else:
         return env
-    
+
+
 def WrapperHardAtari(env, height=96, width=96, frame_stacking=1, max_steps=4500):
     # env = StickyActionEnv(env)
     env = RepeatActionEnv(env)
     env = ResizeEnv(env, height, width, frame_stacking)
     env = RawScoreEnv(env, max_steps)
     env_name = str(env)
-    env = VisitedRoomInfo(env, room_address=3 if 'Montezuma' in env_name else 1)
+    env = VisitedRoomInfo(env, room_address=3 if "Montezuma" in env_name else 1)
 
     return env
 
 
-def WrapperAtariSparseRewards(env, height=96, width=96, frame_stacking=4, frame_skipping=4):
+def WrapperAtariSparseRewards(
+    env, height=96, width=96, frame_stacking=4, frame_skipping=4
+):
     return WrapperAtari(env, height, width, frame_stacking, dense_rewards=0.2)
 
-import gym
 
+import gym
 
 
 # import gym

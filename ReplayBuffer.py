@@ -6,7 +6,10 @@ from operator import itemgetter
 import torch
 import numpy as np
 
-MDP_Transition = namedtuple('MDP_Transition', ('state', 'action', 'next_state', 'reward', 'mask'))
+MDP_Transition = namedtuple(
+    "MDP_Transition", ("state", "action", "next_state", "reward", "mask")
+)
+
 
 class ReplayBuffer(object):
     def __init__(self, capacity):
@@ -48,7 +51,10 @@ class GenericTrajectoryBuffer(GenericBuffer):
 
     def memory_init(self, key, shape):
         steps_per_env = self.capacity // self.n_env
-        shape = (steps_per_env, self.n_env,) + shape
+        shape = (
+            steps_per_env,
+            self.n_env,
+        ) + shape
         self.memory[key] = torch.zeros(shape)
 
     def add(self, **kwargs):
@@ -56,7 +62,7 @@ class GenericTrajectoryBuffer(GenericBuffer):
             for key in kwargs:
                 self.keys.append(key)
                 self.memory_init(key, tuple(kwargs[key].shape[1:]))
-            self.transition = namedtuple('transition', self.keys)
+            self.transition = namedtuple("transition", self.keys)
 
         for key in kwargs:
             self.memory[key][self.index] = kwargs[key]
@@ -71,7 +77,9 @@ class GenericTrajectoryBuffer(GenericBuffer):
 
     def sample(self, indices, reshape_to_batch=True):
         if reshape_to_batch:
-            values = [self.memory[k].reshape(-1, *self.memory[k].shape[2:]) for k in self.keys]
+            values = [
+                self.memory[k].reshape(-1, *self.memory[k].shape[2:]) for k in self.keys
+            ]
             result = self.transition(*values)
         else:
             values = [self.memory[k] for k in self.keys]
@@ -83,7 +91,10 @@ class GenericTrajectoryBuffer(GenericBuffer):
         if batch_size == 0:
             batch_size = self.batch_size
 
-        values = [self.memory[k].reshape(-1, batch_size, *self.memory[k].shape[2:]) for k in self.keys]
+        values = [
+            self.memory[k].reshape(-1, batch_size, *self.memory[k].shape[2:])
+            for k in self.keys
+        ]
         batch = self.transition(*values)
         return batch, self.capacity // batch_size
 
@@ -113,10 +124,10 @@ class GenericReplayBuffer(GenericBuffer):
             for key in kwargs:
                 self.keys.append(key)
                 self.memory_init(key, (self.capacity,) + tuple(kwargs[key].shape[1:]))
-            self.transition = namedtuple('transition', self.keys)
+            self.transition = namedtuple("transition", self.keys)
 
         for key in kwargs:
-            self.memory[key][self.index:self.index + self.n_env] = kwargs[key][:]
+            self.memory[key][self.index : self.index + self.n_env] = kwargs[key][:]
 
         self.index += self.n_env
         if self.capacity_index < self.capacity:
@@ -146,7 +157,7 @@ class GenericReplayBuffer(GenericBuffer):
         return batch, original_batch // batch_size
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     buffer = GenericReplayBuffer(100, 10, 2)
 
     for i in range(100):

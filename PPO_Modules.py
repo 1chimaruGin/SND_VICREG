@@ -20,7 +20,9 @@ class TYPE(Enum):
 
 
 def one_hot_code(values, value_dim):
-    code = torch.zeros((values.shape[0], value_dim), dtype=torch.float32, device=values.device)
+    code = torch.zeros(
+        (values.shape[0], value_dim), dtype=torch.float32, device=values.device
+    )
     code = code.scatter(1, values, 1.0)
     return code
 
@@ -47,16 +49,22 @@ def stratify_sampling(x, n_samples, stratify):
     cum_n_samples = np.cumsum([0] + stratify)
     sampled_idcs = []
     for i, n_strat_sample in enumerate(n_strat_samples):
-        sampled_idcs.append(np.random.choice(range(cum_n_samples[i], cum_n_samples[i + 1]),
-                                             replace=False,
-                                             size=n_strat_sample))
+        sampled_idcs.append(
+            np.random.choice(
+                range(cum_n_samples[i], cum_n_samples[i + 1]),
+                replace=False,
+                size=n_strat_sample,
+            )
+        )
 
     # might not be correct number of samples due to rounding
     n_current_samples = sum(n_strat_samples)
     if n_current_samples < n_samples:
         delta_n_samples = n_samples - n_current_samples
         # might actually resample same as before, but it's only for a few
-        sampled_idcs.append(np.random.choice(range(n_total), replace=False, size=delta_n_samples))
+        sampled_idcs.append(
+            np.random.choice(range(n_total), replace=False, size=delta_n_samples)
+        )
 
     samples = x[np.concatenate(sampled_idcs), ...]
 
@@ -82,7 +90,9 @@ def init_custom(layer, weight_tensor):
 
 
 def init_coupled_orthogonal(layers, gain=1.0):
-    weight = torch.zeros(len(layers) * layers[0].weight.shape[0], *layers[0].weight.shape[1:])
+    weight = torch.zeros(
+        len(layers) * layers[0].weight.shape[0], *layers[0].weight.shape[1:]
+    )
     nn.init.orthogonal_(weight, gain)
     weight = weight.reshape(len(layers), *layers[0].weight.shape)
 
@@ -164,14 +174,8 @@ class DiscreteHead(nn.Module):
 class ContinuousHead(nn.Module):
     def __init__(self, input_dim, action_dim):
         super(ContinuousHead, self).__init__()
-        self.mu = nn.Sequential(
-            nn.Linear(input_dim, action_dim),
-            nn.Tanh()
-        )
-        self.var = nn.Sequential(
-            nn.Linear(input_dim, action_dim),
-            nn.Softplus()
-        )
+        self.mu = nn.Sequential(nn.Linear(input_dim, action_dim), nn.Tanh())
+        self.var = nn.Sequential(nn.Linear(input_dim, action_dim), nn.Softplus())
 
         init_uniform(self.mu[0], 0.03)
         init_uniform(self.var[0], 0.03)
@@ -190,10 +194,10 @@ class ContinuousHead(nn.Module):
     @staticmethod
     def log_prob(probs, actions):
         dim = probs.shape[1]
-        mu, var = probs[:, :dim // 2], probs[:, dim // 2:]
+        mu, var = probs[:, : dim // 2], probs[:, dim // 2 :]
 
-        p1 = - ((actions - mu) ** 2) / (2.0 * var.clamp(min=1e-3))
-        p2 = - torch.log(torch.sqrt(2.0 * np.pi * var))
+        p1 = -((actions - mu) ** 2) / (2.0 * var.clamp(min=1e-3))
+        p2 = -torch.log(torch.sqrt(2.0 * np.pi * var))
 
         log_prob = p1 + p2
 
@@ -202,7 +206,7 @@ class ContinuousHead(nn.Module):
     @staticmethod
     def entropy(probs):
         dim = probs.shape[1]
-        var = probs[:, dim // 2:]
+        var = probs[:, dim // 2 :]
         entropy = -(torch.log(2.0 * np.pi * var) + 1.0) / 2.0
 
         return entropy.mean()
@@ -282,4 +286,3 @@ class Critic2Heads(nn.Module):
     @property
     def bias(self):
         return self.ext.bias, self.int.bias
-

@@ -319,4 +319,3 @@ if __name__ == "__main__":
     analytic.clear()
 
     env.close()
-

@@ -20,7 +20,9 @@ class MultiEnvParallel:
         self.threads_count = thread_count
         self.envs_per_thread = envs_count // thread_count
 
-        self.observations = numpy.zeros((envs_count,) + self.observation_space.shape, dtype=numpy.float32)
+        self.observations = numpy.zeros(
+            (envs_count,) + self.observation_space.shape, dtype=numpy.float32
+        )
         # a = [None] * n_env
         self.rewards = numpy.zeros((envs_count, 1), dtype=numpy.float32)
         self.dones = numpy.zeros((envs_count, 1), dtype=numpy.float32)
@@ -71,5 +73,3 @@ class MultiEnvParallel:
             info[k] = numpy.stack(info[k])
 
         return obs, reward, done, info
-
-

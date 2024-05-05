@@ -10,7 +10,6 @@ from torchvision import transforms
 
 
 class ST_DIM_CNN(nn.Module):
-
     def __init__(self, input_shape, feature_dim):
         super().__init__()
         self.feature_size = feature_dim
@@ -31,7 +30,7 @@ class ST_DIM_CNN(nn.Module):
             nn.Conv2d(64, 128, kernel_size=3, stride=1, padding=1),
             nn.ReLU(),
             nn.Flatten(),
-            nn.Linear(self.final_conv_size, feature_dim)
+            nn.Linear(self.final_conv_size, feature_dim),
         )
 
         # gain = nn.init.calculate_gain('relu')
@@ -49,12 +48,8 @@ class ST_DIM_CNN(nn.Module):
         out = self.main[6:](f5)
 
         if fmaps:
-            return {
-                'f5': f5.permute(0, 2, 3, 1),
-                'out': out
-            }
+            return {"f5": f5.permute(0, 2, 3, 1), "out": out}
         return out
-
 
 
 class VICRegEncoderAtari(nn.Module):
@@ -84,20 +79,38 @@ class VICRegEncoderAtari(nn.Module):
 
         std_z_a = torch.sqrt(z_a.var(dim=0) + 1e-04)
         std_z_b = torch.sqrt(z_b.var(dim=0) + 1e-04)
-        var_loss = torch.mean(nn.functional.relu(1 - std_z_a)) + torch.mean(nn.functional.relu(1 - std_z_b))
+        var_loss = torch.mean(nn.functional.relu(1 - std_z_a)) + torch.mean(
+            nn.functional.relu(1 - std_z_b)
+        )
 
-        z_a = (z_a - z_a.mean(dim=0))
-        z_b = (z_b - z_b.mean(dim=0))
+        z_a = z_a - z_a.mean(dim=0)
+        z_b = z_b - z_b.mean(dim=0)
 
         cov_z_a = torch.matmul(z_a.t(), z_a) / (n - 1)
         cov_z_b = torch.matmul(z_b.t(), z_b) / (n - 1)
 
-        cov_loss = cov_z_a.masked_select(~torch.eye(self.feature_dim, dtype=torch.bool, device=self.config.device)).pow_(2).sum() / self.feature_dim + \
-                   cov_z_b.masked_select(~torch.eye(self.feature_dim, dtype=torch.bool, device=self.config.device)).pow_(2).sum() / self.feature_dim
+        cov_loss = (
+            cov_z_a.masked_select(
+                ~torch.eye(
+                    self.feature_dim, dtype=torch.bool, device=self.config.device
+                )
+            )
+            .pow_(2)
+            .sum()
+            / self.feature_dim
+            + cov_z_b.masked_select(
+                ~torch.eye(
+                    self.feature_dim, dtype=torch.bool, device=self.config.device
+                )
+            )
+            .pow_(2)
+            .sum()
+            / self.feature_dim
+        )
 
-        la = 1.
-        mu = 1.
-        nu = 1. / 25
+        la = 1.0
+        mu = 1.0
+        nu = 1.0 / 25
 
         return la * inv_loss + mu * var_loss + nu * cov_loss
 
@@ -109,7 +122,9 @@ class VICRegEncoderAtari(nn.Module):
         # transforms_train = transforms.RandomErasing(p=1)
         # print(x.max())
         ax = x + torch.randn_like(x) * 0.1
-        ax = nn.functional.upsample(nn.functional.avg_pool2d(ax, kernel_size=2), scale_factor=2, mode='bilinear')
+        ax = nn.functional.upsample(
+            nn.functional.avg_pool2d(ax, kernel_size=2), scale_factor=2, mode="bilinear"
+        )
         # print(ax.max())
 
         # aug = transforms.ToPILImage()(ax[0])
@@ -131,6 +146,6 @@ def __init_general(function, layer, gain):
     else:
         nn.init.zeros_(layer.bias)
 
+
 def init_orthogonal(layer, gain=1.0):
     __init_general(nn.init.orthogonal_, layer, gain)
-

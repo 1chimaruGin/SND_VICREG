@@ -19,12 +19,9 @@ def __init_general(function, layer, gain):
     else:
         nn.init.zeros_(layer.bias)
 
+
 def init_orthogonal(layer, gain=1.0):
     __init_general(nn.init.orthogonal_, layer, gain)
-
-
-
-
 
 
 class PPOAtariNetworkSND(torch.nn.Module):
@@ -50,7 +47,7 @@ class PPOAtariNetworkSND(torch.nn.Module):
             nn.Conv2d(64, 128, kernel_size=3, stride=1, padding=1),
             nn.ReLU(),
             nn.Flatten(),
-            nn.Linear(fc_inputs_count, self.feature_dim)
+            nn.Linear(fc_inputs_count, self.feature_dim),
         )
 
         init_orthogonal(self.features[0], np.sqrt(2))
@@ -59,13 +56,11 @@ class PPOAtariNetworkSND(torch.nn.Module):
         init_orthogonal(self.features[6], np.sqrt(2))
         init_orthogonal(self.features[9], np.sqrt(2))
 
-
-
         self.actor = nn.Sequential(
             nn.ReLU(),
             nn.Linear(self.feature_dim, self.feature_dim),
             nn.ReLU(),
-            DiscreteHead(self.feature_dim, action_dim)
+            DiscreteHead(self.feature_dim, action_dim),
         )
 
         init_orthogonal(self.actor[1], 0.01)
@@ -75,15 +70,14 @@ class PPOAtariNetworkSND(torch.nn.Module):
 
         # self.cnd_model = VICRegModelAtari(input_shape, action_dim, config)
 
-
         self.critic = nn.Sequential(
             torch.nn.Linear(self.feature_dim, self.feature_dim),
             torch.nn.ReLU(),
-            Critic2Heads(self.feature_dim)
+            Critic2Heads(self.feature_dim),
         )
 
         init_orthogonal(self.critic[0], 0.1)
-        init_orthogonal(self.critic[2], 0.01)        
+        init_orthogonal(self.critic[2], 0.01)
 
     def forward(self, state):
         features = self.features(state)
