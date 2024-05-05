@@ -1,9 +1,13 @@
+import os
 import gym
+import time
 import torch
 import platform
 import numpy as np
 from random import random
+from datetime import datetime
 from lightning.fabric import Fabric
+from lightning.fabric.loggers import TensorBoardLogger
 from torch.utils.tensorboard import SummaryWriter
 from utils import get_args
 from PPO_Modules import TYPE
@@ -23,10 +27,26 @@ if __name__ == "__main__":
     print(torch.__config__.parallel_info())
     # torch.autograd.set_detect_anomaly(True)
 
+    args = get_args()
     for i in range(torch.cuda.device_count()):
         print("{0:d}. {1:s}".format(i, torch.cuda.get_device_name(i)))
+    run_name = f"Running_{args.seed}_{int(time.time())}"
+    logger = TensorBoardLogger(
+        root_dir=os.path.join("logs", "fabric_logs", datetime.today().strftime("%Y-%m-%d_%H-%M-%S")), name=run_name
+    )
+    fabric = Fabric()
+    rank = fabric.global_rank
+    world_size = fabric.world_size
+    device = fabric.device
+    print(f"rank: {rank}, world_size: {world_size}, device: {device}")
+    fabric.seed_everything(args.seed)
+    torch.backends.cudnn.deterministic = args.torch_deterministic
 
-    args = get_args()
+    # Log hyperparameters
+    fabric.logger.experiment.add_text(
+        "hyperparameters",
+        "|param|value|\n|-|-|\n%s" % ("\n".join([f"|{key}|{value}|" for key, value in vars(args).items()])),
+    )
 
     env_name = args.env_name
     # PPO_HardAtariGame.run_snd_model(args, 0, env_name)
@@ -43,10 +63,10 @@ if __name__ == "__main__":
     def process_state(state):
         if _preprocess is None:
             processed_state = torch.tensor(state, dtype=torch.float32).to(
-                _config.device
+                device
             )
         else:
-            processed_state = _preprocess(state).to(_config.device)
+            processed_state = _preprocess(state).to(device)
 
         return processed_state
 
@@ -61,7 +81,6 @@ if __name__ == "__main__":
     _preprocess = None
 
     # experiment.add_preprocess(encode_state)
-    fabric = Fabric()
     agent = PPOAtariSNDAgent(input_shape, action_dim, config, TYPE.discrete, fabric)
 
     config = _config
