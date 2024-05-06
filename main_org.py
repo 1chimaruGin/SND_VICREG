@@ -116,7 +116,7 @@ if __name__ == '__main__':
     s = np.zeros((n_env,) + _env.observation_space.shape, dtype=np.float32)
     # agent.load('./models/{0:s}_{1}_{2:d}'.format(config.name, config.model, trial))
     for i in range(n_env):
-        s[i] = _env.reset(i)
+        s[i] = _env.reset(i)[0]
 
     state0 = process_state(s)
 
@@ -188,7 +188,7 @@ if __name__ == '__main__':
             writer.add_scalar('max_room', max_room, step_counter.steps)
             writer.add_scalar('max_unique_rooms', max_unique_room, step_counter.steps)          
 
-            next_state[i] = _env.reset(index)
+            next_state[i] = _env.reset(index)[0]
 
         state1 = process_state(next_state)
 
