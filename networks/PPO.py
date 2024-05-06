@@ -104,7 +104,7 @@ class PPOLightning(L.LightningModule):
         batch_adv_v = adv_values[batch_ofs:batch_l]
         batch_ref_v = ref_values[batch_ofs:batch_l]
         loss = self.calc_loss(states_v, batch_ref_v, batch_adv_v, actions_v, probs_v)
-        self.loss_metrics.update(loss)
+        # self.loss_metrics.update(loss)
         return loss
 
     def training_epoch_end(self, global_step: int):
