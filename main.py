@@ -4,6 +4,7 @@ import time
 import torch
 import platform
 import numpy as np
+from tqdm import tqdm
 from random import random
 from datetime import datetime
 from lightning.fabric import Fabric
@@ -108,6 +109,7 @@ if __name__ == "__main__":
 
     state0 = process_state(s)
 
+    pbar = tqdm(total=step_counter.limit, desc="Training")
     while step_counter.running():
         agent.motivation.update_state_average(state0)
         with torch.no_grad():
@@ -221,7 +223,7 @@ if __name__ == "__main__":
         analytic.end_step()
 
         agent.train(state0, value, action0, probs0, state1, reward, done)
-        print("Step {0:d}/{1:d}".format(step_counter.steps, step_counter.limit))
+        pbar.update(1)
 
         state0 = state1
         p = 0.01  # Probability of saving the agent
@@ -233,6 +235,7 @@ if __name__ == "__main__":
                 "./models/{0:s}_{1}_{2:d}".format(config.name, config.model, trial)
             )
 
+    pbar.close()
     print("Saving data...")
     analytic.reset(np.array(range(n_env)))
     save_data = analytic.finalize()
