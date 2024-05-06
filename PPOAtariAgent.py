@@ -173,15 +173,15 @@ class PPOAtariSNDAgent:
 
     def train(self, state0, value, action0, probs0, state1, reward, mask):
         self.memory.add(
-            state=state0.cpu(),
-            value=value.cpu(),
-            action=action0.cpu(),
-            prob=probs0.cpu(),
-            reward=reward.cpu(),
-            mask=mask.cpu(),
+            state=state0,
+            value=value,
+            action=action0,
+            prob=probs0,
+            reward=reward,
+            mask=mask,
         )
         self.motivation_memory.add(
-            state=state0.cpu(), next_state=state1.cpu(), action=action0.cpu()
+            state=state0, next_state=state1, action=action0
         )
 
         indices = self.memory.indices()
@@ -193,7 +193,7 @@ class PPOAtariSNDAgent:
             self.train_ppo(batch)
             end = time.time()
             print(
-                "Trajectory {0:d} batch size {1:d} epochs {2:d} training time {3:.2f}s".format(
+                "Trajectory {0:d} batch size {1:d} epochs {2:d} training time {3:.2f}s \n".format(
                     self.config.trajectory_size,
                     self.config.batch_size,
                     self.config.ppo_epochs,

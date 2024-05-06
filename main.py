@@ -59,12 +59,9 @@ if __name__ == "__main__":
 
     def process_state(state):
         if _preprocess is None:
-            processed_state = torch.tensor(state, dtype=torch.float32).to(
-                device
-            )
+            processed_state = torch.tensor(state, dtype=torch.float32)
         else:
-            processed_state = _preprocess(state).to(device)
-
+            processed_state = _preprocess(state)
         return processed_state
 
     input_shape = env.observation_space.shape
@@ -114,10 +111,10 @@ if __name__ == "__main__":
         agent.motivation.update_state_average(state0)
         with torch.no_grad():
             features, value, action0, probs0 = agent.get_action(state0)
-        next_state, reward, done, info = _env.step(agent.convert_action(action0.cpu()))
+        next_state, reward, done, info = _env.step(agent.convert_action(action0))
 
         ext_reward = torch.tensor(reward, dtype=torch.float32)
-        int_reward = agent.motivation(state0, error_flag=True)[1].cpu().clip(0.0, 1.0)
+        int_reward = agent.motivation(state0, error_flag=True)[1].clip(0.0, 1.0)
 
         if info is not None:
             if "normalised_score" in info:
@@ -129,17 +126,17 @@ if __name__ == "__main__":
                 score = torch.tensor(info["raw_score"]).unsqueeze(-1)
                 analytic.update(score=score)
 
-        error = agent.motivation(state0, error_flag=True)[0].cpu()
+        error = agent.motivation(state0, error_flag=True)[0]
         # cnd_state = agent.network.cnd_model.preprocess(state0)
         cnd_state = agent.cnd_model.preprocess(state0)
         analytic.update(
             re=ext_reward,
             ri=int_reward,
-            ext_value=value[:, 0].unsqueeze(-1).cpu(),
-            int_value=value[:, 1].unsqueeze(-1).cpu(),
+            ext_value=value[:, 0].unsqueeze(-1),
+            int_value=value[:, 1].unsqueeze(-1),
             error=error,
-            state_space=cnd_state.norm(p=2, dim=[1, 2, 3]).unsqueeze(-1).cpu(),
-            feature_space=features.norm(p=2, dim=1, keepdim=True).cpu(),
+            state_space=cnd_state.norm(p=2, dim=[1, 2, 3]).unsqueeze(-1),
+            feature_space=features.norm(p=2, dim=1, keepdim=True),
         )
         # if sum(done)[0]>0:
         #     print('')
