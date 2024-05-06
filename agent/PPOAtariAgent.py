@@ -1,6 +1,7 @@
 import time
 import torch
 import argparse
+import numpy as np
 import lightning as L
 from lightning.fabric import Fabric
 from networks.PPO_Modules import TYPE
@@ -77,7 +78,9 @@ class PPOAtariSNDAgent:
         features = self.cnd_model.target_model(self.cnd_model.preprocess(state))
         return features.detach(), value.detach(), action, probs.detach()
 
-    def convert_action(self, action):
+    def convert_action(self, action: torch.Tensor) -> np.ndarray:
+        if action.device.type == "cuda":
+            action = action.cpu()
         if self.action_type == TYPE.discrete:
             a = torch.argmax(action, dim=1).numpy()
             return a

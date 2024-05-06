@@ -113,7 +113,7 @@ if __name__ == "__main__":
 
     # pbar = tqdm(total=step_counter.limit, desc="Training")
     while step_counter.running():
-        agent.motivation.update_state_average(state0.cpu())
+        agent.motivation.update_state_average(state0)
         with torch.no_grad():
             features, value, action0, probs0 = agent.get_action(state0)
         next_state, reward, done, info = _env.step(agent.convert_action(action0))
