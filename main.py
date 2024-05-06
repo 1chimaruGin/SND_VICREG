@@ -104,7 +104,7 @@ if __name__ == "__main__":
     s = np.zeros((n_env,) + _env.observation_space.shape, dtype=np.float32)
     # agent.load('./models/{0:s}_{1}_{2:d}'.format(config.name, config.model, trial))
     for i in range(n_env):
-        s[i] = _env.reset(i)
+        s[i] = _env.reset(i)[0]
 
     state0 = process_state(s)
 
@@ -151,7 +151,7 @@ if __name__ == "__main__":
             max_room = np.max(info["episode_visited_rooms"])
             max_unique_room = np.max(info["max_unique_rooms"])
 
-            # print(
+            # print(!pip install numpy==1.23.1
             #     'Run {0:d} step {1:d}/{2:d} training [ext. reward {3:f} int. reward (max={4:f} mean={5:f} std={6:f}) steps {7:d}  mean reward {8:f} score {9:f} feature space (max={10:f} mean={11:f} std={12:f})]'.format(
             #         trial, step_counter.steps, step_counter.limit, stats['re'].sum[i], stats['ri'].max[i], stats['ri'].mean[i], stats['ri'].std[i],
             #         int(stats['re'].step[i]), reward_avg.value().item(), stats['score'].sum[i], stats['feature_space'].max[i], stats['feature_space'].mean[i],
