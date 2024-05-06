@@ -1,8 +1,7 @@
-import time
 import torch
 import lightning as L
-from RunningAverage import FabricRunningStats
-from RNDModelAtari import VICRegModelAtari
+from .RNDModelAtari import VICRegModelAtari
+from utils.RunningAverage import FabricRunningStats
 
 
 class SNDMotivationLightning(L.LightningModule):

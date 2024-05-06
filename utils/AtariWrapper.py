@@ -11,7 +11,6 @@ class NopOpsEnv(gym.Wrapper):
     def reset(self):
         self.env.reset()
         noops = numpy.random.randint(1, self.max_count + 1)
-
         for _ in range(noops):
             obs, _, done, _ = self.env.step(0)
 

@@ -1,15 +1,7 @@
-import numpy as np
 import torch
+import numpy as np
 import torch.nn as nn
 from torch.distributions import Categorical, Normal
-
-
-# from modules import init_orthogonal, init_uniform
-
-
-import torch
-import numpy as np
-
 from enum import Enum
 
 
@@ -20,7 +12,9 @@ class TYPE(Enum):
 
 
 def one_hot_code(values, value_dim):
-    code = torch.zeros((values.shape[0], value_dim), dtype=torch.float32)
+    code = torch.zeros(
+        (values.shape[0], value_dim), dtype=torch.float32, device=values.device
+    )
     code = code.scatter(1, values, 1.0)
     return code
 
@@ -67,12 +61,6 @@ def stratify_sampling(x, n_samples, stratify):
     samples = x[np.concatenate(sampled_idcs), ...]
 
     return samples
-
-
-from enum import Enum
-
-import torch
-import torch.nn as nn
 
 
 class ARCH(Enum):

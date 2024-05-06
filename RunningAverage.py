@@ -79,7 +79,9 @@ class RunningStats:
         self.n = n
         if n > 1:
             shape = (n,) + shape
-            self.count = torch.ones((n, 1),)
+            self.count = torch.ones(
+                (n, 1),
+            )
         else:
             self.count = 1
         self.eps = 0.0000001

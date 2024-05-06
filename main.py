@@ -10,16 +10,16 @@ from datetime import datetime
 from lightning.fabric import Fabric
 from lightning.fabric.loggers import TensorBoardLogger
 from torch.utils.tensorboard import SummaryWriter
-from utils import get_args
-from PPO_Modules import TYPE
-from PPOAtariAgent import PPOAtariSNDAgent
+from networks.PPO_Modules import TYPE
+from agent.PPOAtariAgent import PPOAtariSNDAgent
 
 # from plots.paths import models_root
-from AtariWrapper import WrapperHardAtari
-from MultiEnvWrapper import MultiEnvParallel
-from ResultCollector import ResultCollector
-from RunningAverage import RunningAverageWindow, StepCounter
-from TimeEstimator import PPOTimeEstimator
+from utils.AtariWrapper import WrapperHardAtari
+from utils.MultiEnvWrapper import MultiEnvParallel
+from utils.ResultCollector import ResultCollector
+from utils.RunningAverage import RunningAverageWindow, StepCounter
+from utils.TimeEstimator import PPOTimeEstimator
+from utils.utils import get_args
 
 if __name__ == "__main__":
     print(platform.system())
@@ -33,7 +33,10 @@ if __name__ == "__main__":
         print("{0:d}. {1:s}".format(i, torch.cuda.get_device_name(i)))
     run_name = f"Running_{args.seed}_{int(time.time())}"
     logger = TensorBoardLogger(
-        root_dir=os.path.join("logs", "fabric_logs", datetime.today().strftime("%Y-%m-%d_%H-%M-%S")), name=run_name
+        root_dir=os.path.join(
+            "logs", "fabric_logs", datetime.today().strftime("%Y-%m-%d_%H-%M-%S")
+        ),
+        name=run_name,
     )
     fabric = Fabric()
     rank = fabric.global_rank
@@ -59,7 +62,9 @@ if __name__ == "__main__":
 
     def process_state(state):
         if _preprocess is None:
-            processed_state = torch.tensor(state, dtype=torch.float32).to(_config.device)
+            processed_state = torch.tensor(state, dtype=torch.float32).to(
+                _config.device
+            )
         else:
             processed_state = _preprocess(state).to(_config.device)
         return processed_state

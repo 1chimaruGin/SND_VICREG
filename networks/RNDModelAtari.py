@@ -1,27 +1,8 @@
-from math import sqrt
-
 import torch
 import torch.nn as nn
-import numpy as np
-
-from ResultCollector import ResultCollector
-
-# from modules import init_orthogonal
-# from modules.encoders.EncoderAtari import VICRegEncoderAtari
-from RunningAverage import FabricRunningStats
-
-
-import random
-import time
 from math import sqrt
-
-import torch
-import torch.nn as nn
-import numpy as np
-import torchvision
-from torchvision import transforms
-
-# from modules import init_orthogonal
+from utils.ResultCollector import ResultCollector
+from utils.RunningAverage import RunningStatsSimple
 
 
 def __init_general(function, layer, gain):
@@ -88,13 +69,11 @@ class ST_DIM_CNN(nn.Module):
 class VICRegEncoderAtari(nn.Module):
     def __init__(self, input_shape, feature_dim, config):
         super(VICRegEncoderAtari, self).__init__()
-
         self.config = config
         self.input_channels = input_shape[0]
         self.input_height = input_shape[1]
         self.input_width = input_shape[2]
         self.feature_dim = feature_dim
-
         self.encoder = ST_DIM_CNN(input_shape, feature_dim)
 
     def forward(self, state):
@@ -102,25 +81,20 @@ class VICRegEncoderAtari(nn.Module):
 
     def loss_function(self, states, next_states):
         n = states.shape[0]
-        d = self.feature_dim
         y_a = self.augment(states)
         y_b = self.augment(next_states)
         z_a = self.encoder(y_a)
         z_b = self.encoder(y_b)
         inv_loss = nn.functional.mse_loss(z_a, z_b)
-
         std_z_a = torch.sqrt(z_a.var(dim=0) + 1e-04)
         std_z_b = torch.sqrt(z_b.var(dim=0) + 1e-04)
         var_loss = torch.mean(nn.functional.relu(1 - std_z_a)) + torch.mean(
             nn.functional.relu(1 - std_z_b)
         )
-
         z_a = z_a - z_a.mean(dim=0)
         z_b = z_b - z_b.mean(dim=0)
-
         cov_z_a = torch.matmul(z_a.t(), z_a) / (n - 1)
         cov_z_b = torch.matmul(z_b.t(), z_b) / (n - 1)
-
         cov_loss = (
             cov_z_a.masked_select(~torch.eye(self.feature_dim, dtype=torch.bool))
             .pow_(2)
@@ -131,11 +105,9 @@ class VICRegEncoderAtari(nn.Module):
             .sum()
             / self.feature_dim
         )
-
         la = 1.0
         mu = 1.0
         nu = 1.0 / 25
-
         return la * inv_loss + mu * var_loss + nu * cov_loss
 
     def augment(self, x):
@@ -149,32 +121,22 @@ class VICRegEncoderAtari(nn.Module):
         ax = nn.functional.upsample(
             nn.functional.avg_pool2d(ax, kernel_size=2), scale_factor=2, mode="bilinear"
         )
-        # print(ax.max())
-
-        # aug = transforms.ToPILImage()(ax[0])
-        # aug.show()
-
         return ax
 
 
 class VICRegModelAtari(nn.Module):
     def __init__(self, input_shape, action_dim, config):
         super(VICRegModelAtari, self).__init__()
-
         self.config = config
         self.action_dim = action_dim
-
         input_channels = 1
         # input_channels = input_shape[0]
         input_height = input_shape[1]
         input_width = input_shape[2]
         self.input_shape = (input_channels, input_height, input_width)
         self.feature_dim = 512
-
         fc_inputs_count = 128 * (input_width // 8) * (input_height // 8)
-
-        self.state_average = FabricRunningStats((4, input_height, input_width))
-
+        self.state_average = RunningStatsSimple((4, input_height, input_width))
         self.target_model = VICRegEncoderAtari(
             self.input_shape, self.feature_dim, config
         )

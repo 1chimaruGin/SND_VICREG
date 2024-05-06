@@ -3,13 +3,13 @@ import torch
 import argparse
 import lightning as L
 from lightning.fabric import Fabric
-from PPO_Modules import TYPE
-from PPO import PPOLightning
-from RNDModelAtari import VICRegModelAtari
-from SNDMotivation import SNDMotivationLightning
-from ReplayBuffer import GenericTrajectoryBuffer
-from PPO_AtariModules import PPOAtariNetworkSND
-from ReplayBuffer import GenericTrajectoryBuffer
+from networks.PPO_Modules import TYPE
+from networks.PPO import PPOLightning
+from networks.RNDModelAtari import VICRegModelAtari
+from networks.PPO_AtariModules import PPOAtariNetworkSND
+from networks.SNDMotivation import SNDMotivationLightning
+from utils.ReplayBuffer import GenericTrajectoryBuffer
+from utils.ReplayBuffer import GenericTrajectoryBuffer
 
 
 class PPOAtariSNDAgent:
@@ -31,7 +31,7 @@ class PPOAtariSNDAgent:
         self.config = config
         self.network = PPOAtariNetworkSND(
             state_dim, action_dim, config, head=action_type
-        ).to(fabric.device)
+        ).to(config.device)
 
         self.motivation_memory = GenericTrajectoryBuffer(
             config.trajectory_size, config.batch_size, config.n_env

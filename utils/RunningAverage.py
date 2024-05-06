@@ -1,5 +1,5 @@
-import numpy as np
 import torch
+import numpy as np
 from etaprogress.progress import ProgressBar
 
 
@@ -47,16 +47,19 @@ class StepCounter:
     def print(self):
         print(self.bar)
 
+    def n_steps(self):
+        return self.steps
+
     def running(self):
         return self.steps < self.limit
 
 
 class RunningStatsSimple:
-    def __init__(self, shape, device):
+    def __init__(self, shape):
         self.count = 1
         self.eps = 0.0000001
-        self.mean = torch.zeros(shape, device=device)
-        self.var = 0.01 * torch.ones(shape, device=device)
+        self.mean = torch.zeros(shape)
+        self.var = 0.01 * torch.ones(shape)
         self.std = (self.var**0.5) + self.eps
 
     def update(self, x):
@@ -76,14 +79,68 @@ class RunningStats:
         self.n = n
         if n > 1:
             shape = (n,) + shape
-            self.count = torch.ones((n, 1), device=device)
+            self.count = torch.ones(
+                (n, 1),
+            )
         else:
             self.count = 1
         self.eps = 0.0000001
-        self.max = torch.zeros(shape, device=device)
-        self.sum = torch.zeros(shape, device=device)
-        self.mean = torch.zeros(shape, device=device)
-        self.var = 0.01 * torch.ones(shape, device=device)
+        self.max = torch.zeros(shape)
+        self.sum = torch.zeros(shape)
+        self.mean = torch.zeros(shape)
+        self.var = 0.01 * torch.ones(shape)
+        self.std = (self.var**0.5) + self.eps
+
+    def update(self, x, reduction="mean"):
+        self.count += 1
+
+        mean = None
+        var = None
+        max = torch.maximum(self.max, x)
+
+        if reduction == "mean":
+            self.sum += x.mean(axis=0)
+            mean = self.mean + (x.mean(axis=0) - self.mean) / self.count
+            var = self.var + ((x - self.mean) * (x - mean)).mean(axis=0)
+        if reduction == "none":
+            self.sum += x
+            mean = self.mean + (x - self.mean) / self.count
+            var = self.var + ((x - self.mean) * (x - mean))
+
+        self.max = max
+        self.mean = mean
+        self.var = var
+
+        self.std = ((self.var / self.count) ** 0.5) + self.eps
+
+    def reset(self, i):
+        if self.n > 1:
+            self.max[i].fill_(0)
+            self.sum[i].fill_(0)
+            self.mean[i].fill_(0)
+            self.var[i].fill_(0.01)
+            self.count[i] = 1
+        else:
+            self.max.fill_(0)
+            self.sum.fill_(0)
+            self.mean.fill_(0)
+            self.var.fill_(0.01)
+            self.count = 1
+
+
+class FabricRunningStats:
+    def __init__(self, shape, n=1):
+        self.n = n
+        if n > 1:
+            shape = (n,) + shape
+            self.count = torch.ones((n, 1))
+        else:
+            self.count = 1
+        self.eps = 0.0000001
+        self.max = torch.zeros(shape)
+        self.sum = torch.zeros(shape)
+        self.mean = torch.zeros(shape)
+        self.var = 0.01 * torch.ones(shape)
         self.std = (self.var**0.5) + self.eps
 
     def update(self, x, reduction="mean"):
