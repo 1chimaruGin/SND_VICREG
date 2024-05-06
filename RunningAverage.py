@@ -47,6 +47,9 @@ class StepCounter:
     def print(self):
         print(self.bar)
 
+    def n_steps(self):
+        return self.steps
+
     def running(self):
         return self.steps < self.limit
 

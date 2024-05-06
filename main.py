@@ -221,10 +221,12 @@ if __name__ == "__main__":
         analytic.end_step()
 
         agent.train(state0, value, action0, probs0, state1, reward, done)
+        print("Step {0:d}/{1:d}".format(step_counter.steps, step_counter.limit))
 
         state0 = state1
-        p = 0.0001  # Probability of saving the agent
+        p = 0.01  # Probability of saving the agent
         time_estimator.update(n_env)
+        # save model
         if random() < p:
             print("model saved!")
             agent.save(
