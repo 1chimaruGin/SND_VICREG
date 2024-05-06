@@ -18,7 +18,7 @@ def get_args():
     )
     parser.add_argument("--config", type=int, default=2, help="id of config")
     parser.add_argument("--name", type=str, default="test", help="id of config")
-    parser.add_argument("--device", type=str, help="device type", default="cpu")
+    parser.add_argument("--device", type=str, help="device type", default="cuda")
     parser.add_argument("--gpus", help="device ids", default=0)
     parser.add_argument("--load", type=str, help="path to saved agent", default="")
     parser.add_argument("-s", "--shift", type=int, help="shift result id", default=0)
