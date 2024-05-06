@@ -61,13 +61,10 @@ class RunningStatsSimple:
 
     def update(self, x):
         self.count += 1
-
         mean = self.mean + (x.mean(axis=0) - self.mean) / self.count
         var = self.var + ((x - self.mean) * (x - mean)).mean(axis=0)
-
         self.mean = mean
         self.var = var
-
         self.std = ((self.var / self.count) ** 0.5) + self.eps
 
 

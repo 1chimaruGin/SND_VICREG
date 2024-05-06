@@ -64,13 +64,10 @@ class RunningStatsSimple:
 
     def update(self, x):
         self.count += 1
-
         mean = self.mean + (x.mean(axis=0) - self.mean) / self.count
         var = self.var + ((x - self.mean) * (x - mean)).mean(axis=0)
-
         self.mean = mean
         self.var = var
-
         self.std = ((self.var / self.count) ** 0.5) + self.eps
 
 
@@ -79,16 +76,14 @@ class RunningStats:
         self.n = n
         if n > 1:
             shape = (n,) + shape
-            self.count = torch.ones(
-                (n, 1),
-            )
+            self.count = torch.ones((n, 1), device=device)
         else:
             self.count = 1
         self.eps = 0.0000001
-        self.max = torch.zeros(shape)
-        self.sum = torch.zeros(shape)
-        self.mean = torch.zeros(shape)
-        self.var = 0.01 * torch.ones(shape)
+        self.max = torch.zeros(shape, device=device)
+        self.sum = torch.zeros(shape, device=device)
+        self.mean = torch.zeros(shape, device=device)
+        self.var = 0.01 * torch.ones(shape, device=device)
         self.std = (self.var**0.5) + self.eps
 
     def update(self, x, reduction="mean"):
@@ -145,11 +140,9 @@ class FabricRunningStats:
 
     def update(self, x, reduction="mean"):
         self.count += 1
-
         mean = None
         var = None
         max = torch.maximum(self.max, x)
-
         if reduction == "mean":
             self.sum += x.mean(axis=0)
             mean = self.mean + (x.mean(axis=0) - self.mean) / self.count
@@ -158,11 +151,9 @@ class FabricRunningStats:
             self.sum += x
             mean = self.mean + (x - self.mean) / self.count
             var = self.var + ((x - self.mean) * (x - mean))
-
         self.max = max
         self.mean = mean
         self.var = var
-
         self.std = ((self.var / self.count) ** 0.5) + self.eps
 
     def reset(self, i):
