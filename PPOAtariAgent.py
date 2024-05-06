@@ -28,7 +28,7 @@ class PPOAtariSNDAgent:
             config.trajectory_size, config.batch_size, config.n_env
         )
         self.action_type = action_type
-
+        self.config = config
         self.network = PPOAtariNetworkSND(
             state_dim, action_dim, config, head=action_type
         ).to(config.device)
@@ -192,7 +192,14 @@ class PPOAtariSNDAgent:
             batch = self.prepare_ppo_training(self.memory, indices)
             self.train_ppo(batch)
             end = time.time()
-            print(f"[INFO] PPO training time: {end - start}s")
+            print(
+                "Trajectory {0:d} batch size {1:d} epochs {2:d} training time {3:.2f}s".format(
+                    self.config.trajectory_size,
+                    self.config.batch_size,
+                    self.config.ppo_epochs,
+                    end - start,
+                )
+            )
             # self.algorithm.train(self.memory, indices)
             self.memory.clear()
 
