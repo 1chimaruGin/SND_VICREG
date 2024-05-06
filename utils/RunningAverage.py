@@ -92,6 +92,8 @@ class RunningStats:
 
     def update(self, x, reduction="mean"):
         self.count += 1
+        if x.device != self.mean.device:
+            x = x.to(self.mean.device)
 
         mean = None
         var = None
