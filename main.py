@@ -226,7 +226,7 @@ if __name__ == "__main__":
         # pbar.update(1)
 
         state0 = state1
-        p = 0.01  # Probability of saving the agent
+        p = 0.0001  # Probability of saving the agent
         time_estimator.update(n_env)
         # save model
         if random() < p:
