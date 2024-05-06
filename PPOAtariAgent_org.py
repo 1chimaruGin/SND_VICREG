@@ -1,5 +1,3 @@
-import lightning as L
-from lightning.fabric import Fabric
 from PPO import PPO
 from ReplayBuffer import GenericTrajectoryBuffer
 from PPO_AtariModules import PPOAtariNetworkSND
@@ -8,10 +6,10 @@ from PPO_AtariModules import PPOAtariNetworkSND
 import torch
 
 from PPO_Modules import TYPE
-from PPO import PPO, PPOLightning
-from ReplayBuffer import GenericTrajectoryBuffer
+from PPO_org import PPO
+from ReplayBuffer_org import GenericTrajectoryBuffer
 
-from SNDMotivation import SNDMotivation
+from SNDMotivation_org import SNDMotivation
 from RNDModelAtari import VICRegModelAtari
 
 
