@@ -186,16 +186,18 @@ class PPOAtariSNDAgent:
         motivation_indices = self.motivation_memory.indices()
 
         if indices is not None:
-            start = time.time()
+            s1 = time.time()
             batch = self.prepare_ppo_training(self.memory, indices)
+            s2 = time.time()
+            print("[INFO] prepare time {0:.2f}".format(s2 - s1))
             self.train_ppo(batch)
-            end = time.time()
+            s3 = time.time()
             print(
                 "Trajectory {0:d} batch size {1:d} epochs {2:d} training time {3:.2f}s \n".format(
                     self.config.trajectory_size,
                     self.config.batch_size,
                     self.config.ppo_epochs,
-                    end - start,
+                    s3 - s2,
                 )
             )
             # self.algorithm.train(self.memory, indices)
