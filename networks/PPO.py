@@ -91,7 +91,6 @@ class PPOLightning(L.LightningModule):
         return returns, advantages
 
     def training_step(self, batch: Dict[str, torch.Tensor]):
-        print("Device of states: ", batch["states"].device)
         states = batch["states"]
         actions = batch["actions"]
         probs = batch["probs"]
