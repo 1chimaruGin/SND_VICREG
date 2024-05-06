@@ -119,7 +119,7 @@ if __name__ == "__main__":
         next_state, reward, done, info = _env.step(agent.convert_action(action0))
 
         ext_reward = torch.tensor(reward, dtype=torch.float32)
-        int_reward = agent.motivation(state0, error_flag=True)[1].clip(0.0, 1.0)
+        int_reward = agent.motivation(state0, error_flag=True)[1].cpu().clip(0.0, 1.0)
 
         if info is not None:
             if "normalised_score" in info:
