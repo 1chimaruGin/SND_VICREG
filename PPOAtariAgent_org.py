@@ -1,6 +1,4 @@
-from PPO import PPO
 from PPO_AtariModules import PPOAtariNetworkSND
-
 # from motivation.SNDMotivation import SNDMotivationFactory
 import torch
 
