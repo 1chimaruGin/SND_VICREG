@@ -7,7 +7,7 @@ import numpy as np
 from random import random
 from torch.utils.tensorboard import SummaryWriter
 from PPO_Modules import TYPE
-from PPOAtariAgent import PPOAtariSNDAgent
+from PPOAtariAgent_org import PPOAtariSNDAgent
 # from plots.paths import models_root
 from AtariWrapper import WrapperHardAtari
 from MultiEnvWrapper import MultiEnvParallel
