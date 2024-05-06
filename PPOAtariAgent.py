@@ -31,14 +31,12 @@ class PPOAtariSNDAgent:
         self.config = config
         self.network = PPOAtariNetworkSND(
             state_dim, action_dim, config, head=action_type
-        ).to(config.device)
+        )
 
         self.motivation_memory = GenericTrajectoryBuffer(
             config.trajectory_size, config.batch_size, config.n_env
         )
-        self.cnd_model = VICRegModelAtari(state_dim, action_dim, config).to(
-            config.device
-        )
+        self.cnd_model = VICRegModelAtari(state_dim, action_dim, config)
         motivation = SNDMotivationLightning(
             network=self.cnd_model,
             learning_rate=config.motivation_lr,
