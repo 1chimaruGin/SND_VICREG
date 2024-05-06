@@ -59,9 +59,9 @@ if __name__ == "__main__":
 
     def process_state(state):
         if _preprocess is None:
-            processed_state = torch.tensor(state, dtype=torch.float32).to(fabric.device)
+            processed_state = torch.tensor(state, dtype=torch.float32).to(_config.device)
         else:
-            processed_state = _preprocess(state).to(fabric.device)
+            processed_state = _preprocess(state).to(_config.device)
         return processed_state
 
     input_shape = env.observation_space.shape
