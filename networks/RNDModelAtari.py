@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 from math import sqrt
 from utils.ResultCollector import ResultCollector
-from utils.RunningAverage import RunningStatsSimple
+from utils.RunningAverage import FabricRunningStats
 
 
 def __init_general(function, layer, gain):
@@ -136,7 +136,7 @@ class VICRegModelAtari(nn.Module):
         self.input_shape = (input_channels, input_height, input_width)
         self.feature_dim = 512
         fc_inputs_count = 128 * (input_width // 8) * (input_height // 8)
-        self.state_average = RunningStatsSimple((4, input_height, input_width))
+        self.state_average = FabricRunningStats((4, input_height, input_width))
         self.target_model = VICRegEncoderAtari(
             self.input_shape, self.feature_dim, config
         )
