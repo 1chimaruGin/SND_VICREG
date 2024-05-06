@@ -179,7 +179,6 @@ class PPOAtariSNDAgent:
             mask=mask,
         )
         self.motivation_memory.add(state=state0, next_state=state1, action=action0)
-
         indices = self.memory.indices()
         motivation_indices = self.motivation_memory.indices()
 
