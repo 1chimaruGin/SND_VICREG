@@ -63,6 +63,10 @@ class RunningStatsSimple:
         self.std = (self.var**0.5) + self.eps
 
     def update(self, x):
+        if x.device != self.mean.device:
+            self.mean = self.mean.to(x.device)
+            self.var = self.var.to(x.device)
+            self.std = self.std.to(x.device)
         self.count += 1
         mean = self.mean + (x.mean(axis=0) - self.mean) / self.count
         var = self.var + ((x - self.mean) * (x - mean)).mean(axis=0)
