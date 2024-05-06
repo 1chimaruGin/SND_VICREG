@@ -1,6 +1,6 @@
 import time
 import torch
-from RunningAverage import RunningStats
+from RunningAverage_org import RunningStats
 
 
 class SNDMotivation:

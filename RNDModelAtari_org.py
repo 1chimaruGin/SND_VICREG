@@ -1,14 +1,12 @@
 from math import sqrt
-
 import torch
 import torch.nn as nn
 import numpy as np
-
 from ResultCollector import ResultCollector
 
 # from modules import init_orthogonal
 # from modules.encoders.EncoderAtari import VICRegEncoderAtari
-from RunningAverage import FabricRunningStats
+from RunningAverage_org import RunningStatsSimple
 
 
 import random
@@ -124,7 +122,7 @@ class VICRegEncoderAtari(nn.Module):
         cov_loss = (
             cov_z_a.masked_select(
                 ~torch.eye(
-                    self.feature_dim, dtype=torch.bool
+                    self.feature_dim, dtype=torch.bool, device=self.config.device
                 )
             )
             .pow_(2)
@@ -132,7 +130,7 @@ class VICRegEncoderAtari(nn.Module):
             / self.feature_dim
             + cov_z_b.masked_select(
                 ~torch.eye(
-                    self.feature_dim, dtype=torch.bool
+                    self.feature_dim, dtype=torch.bool, device=self.config.device
                 )
             )
             .pow_(2)
@@ -181,8 +179,8 @@ class VICRegModelAtari(nn.Module):
 
         fc_inputs_count = 128 * (input_width // 8) * (input_height // 8)
 
-        self.state_average = FabricRunningStats(
-            (4, input_height, input_width)
+        self.state_average = RunningStatsSimple(
+            (4, input_height, input_width), config.device
         )
 
         self.target_model = VICRegEncoderAtari(

@@ -85,7 +85,7 @@ class VICRegEncoderAtari(nn.Module):
         cov_loss = (
             cov_z_a.masked_select(
                 ~torch.eye(
-                    self.feature_dim, dtype=torch.bool
+                    self.feature_dim, dtype=torch.bool, device=self.config.device
                 )
             )
             .pow_(2)
@@ -93,7 +93,7 @@ class VICRegEncoderAtari(nn.Module):
             / self.feature_dim
             + cov_z_b.masked_select(
                 ~torch.eye(
-                    self.feature_dim, dtype=torch.bool
+                    self.feature_dim, dtype=torch.bool, device=self.config.device
                 )
             )
             .pow_(2)

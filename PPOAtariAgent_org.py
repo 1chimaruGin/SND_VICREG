@@ -7,7 +7,7 @@ from PPO_org import PPO
 from ReplayBuffer_org import GenericTrajectoryBuffer
 
 from SNDMotivation_org import SNDMotivation
-from RNDModelAtari import VICRegModelAtari
+from RNDModelAtari_org import VICRegModelAtari
 
 
 class PPOAtariSNDAgent:
