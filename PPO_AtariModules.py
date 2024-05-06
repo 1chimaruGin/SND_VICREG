@@ -65,17 +65,13 @@ class PPOAtariNetworkSND(torch.nn.Module):
 
         init_orthogonal(self.actor[1], 0.01)
         init_orthogonal(self.actor[3], 0.01)
-
         self.actor = Actor(self.actor, head, self.action_dim)
-
         # self.cnd_model = VICRegModelAtari(input_shape, action_dim, config)
-
         self.critic = nn.Sequential(
             torch.nn.Linear(self.feature_dim, self.feature_dim),
             torch.nn.ReLU(),
             Critic2Heads(self.feature_dim),
         )
-
         init_orthogonal(self.critic[0], 0.1)
         init_orthogonal(self.critic[2], 0.01)
 
@@ -84,5 +80,4 @@ class PPOAtariNetworkSND(torch.nn.Module):
         value = self.critic(features)
         action, probs = self.actor(features)
         action = self.actor.encode_action(action)
-
         return value, action, probs

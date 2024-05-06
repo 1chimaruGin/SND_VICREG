@@ -31,7 +31,7 @@ class PPOAtariSNDAgent:
         self.config = config
         self.network = PPOAtariNetworkSND(
             state_dim, action_dim, config, head=action_type
-        )
+        ).to(fabric.device)
 
         self.motivation_memory = GenericTrajectoryBuffer(
             config.trajectory_size, config.batch_size, config.n_env
@@ -41,7 +41,7 @@ class PPOAtariSNDAgent:
             network=self.cnd_model,
             learning_rate=config.motivation_lr,
             eta=config.motivation_eta,
-        )
+        ).to(fabric.device)
         motivation, motivation_optimizer = self.fabric_agent(fabric, motivation)
         self.motivation = motivation
         self.motivation_optimizer = motivation_optimizer
