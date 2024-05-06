@@ -37,13 +37,13 @@ def get_args():
         "--num_processes",
         type=int,
         help="number of parallel processes started in parallel mode (0=automatic number of cpus)",
-        default=2,
+        default=4,
     )
     parser.add_argument(
         "--num_threads",
         type=int,
         help="number of parallel threads running in PPO (0=automatic number of cpus)",
-        default=2,
+        default=4,
     )
     parser.add_argument(
         "-t",
