@@ -219,23 +219,21 @@ if __name__ == "__main__":
             next_state[i] = _env.reset(index)
 
         state1 = process_state(next_state)
-
         reward = torch.cat([ext_reward, int_reward], dim=1)
         done = torch.tensor(1 - done, dtype=torch.float32)
         analytic.end_step()
 
         agent.train(state0, value, action0, probs0, state1, reward, done)
-        # pbar.update(1)
 
         state0 = state1
-        p = 0.0001  # Probability of saving the agent
         time_estimator.update(n_env)
-        # save model
-        if random() < p:
-            print("model saved!")
-            agent.save(
-                "./models/{0:s}_{1}_{2:d}".format(config.name, config.model, trial)
-            )
+        # p = 0.0001  # Probability of saving the agent
+        # # save model
+        # if random() < p:
+        #     print("model saved!")
+        #     agent.save(
+        #         "./models/{0:s}_{1}_{2:d}".format(config.name, config.model, trial)
+        #     )
 
     # pbar.close()
     print("Saving data...")

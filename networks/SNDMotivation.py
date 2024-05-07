@@ -16,9 +16,16 @@ class SNDMotivationLightning(L.LightningModule):
         optimizer = torch.optim.Adam(self.network.parameters(), lr=self.learning_rate)
         return optimizer
 
-    def training_step(self, batch, idx):
-        states = batch.state[idx]
-        next_states = batch.next_state[idx]
+    # def training_step(self, batch, idx):
+    #     states = batch.state[idx]
+    #     next_states = batch.next_state[idx]
+    #     print("State shape", states.shape)
+    #     print("Next state shape", next_states.shape)
+    #     loss = self.network.loss_function(states, next_states)
+    #     return loss
+
+    def training_step(self, batch):
+        states, next_states = batch["states"], batch["next_states"]
         loss = self.network.loss_function(states, next_states)
         return loss
 

@@ -1,3 +1,5 @@
+import time
+import sys
 import torch
 import lightning as L
 from torchmetrics import MeanMetric
@@ -48,7 +50,7 @@ class PPOLightning(L.LightningModule):
         self.n_env = n_env
         self.ext_adv_scale = ext_adv_scale
         self.int_adv_scale = int_adv_scale
-        self.loss_metrics = MeanMetric()
+        # self.loss_metrics = MeanMetric()
 
     def calc_loss(self, states, ref_value, adv_value, old_actions, old_probs):
         values, _, probs = self.network(states)
@@ -91,29 +93,25 @@ class PPOLightning(L.LightningModule):
         return returns, advantages
 
     def training_step(self, batch: Dict[str, torch.Tensor]):
-        states = batch["states"]
-        actions = batch["actions"]
-        probs = batch["probs"]
-        adv_values = batch["adv_values"]
-        ref_values = batch["ref_values"]
-        batch_ofs = batch["batch_ofs"]
-        batch_l = batch_ofs + self.batch_size
-        states_v = states[batch_ofs:batch_l]
-        actions_v = actions[batch_ofs:batch_l]
-        probs_v = probs[batch_ofs:batch_l]
-        batch_adv_v = adv_values[batch_ofs:batch_l]
-        batch_ref_v = ref_values[batch_ofs:batch_l]
+        states_v = batch["states"]
+        actions_v = batch["actions"]
+        probs_v = batch["probs"]
+        batch_adv_v = batch["adv_values"]
+        batch_ref_v = batch["ref_values"]
         loss = self.calc_loss(states_v, batch_ref_v, batch_adv_v, actions_v, probs_v)
         # self.loss_metrics.update(loss)
         return loss
 
-    def training_epoch_end(self, global_step: int):
-        self.logger.log_metrics(
-            {"Loss/mean_loss": self.loss_metrics.compute()},
-            global_step,
-        )
-        self.loss_metrics.reset()
+    # def training_epoch_end(self, global_step: int):
+    #     self.logger.log_metrics(
+    #         {"Loss/mean_loss": self.loss_metrics.compute()},
+    #         global_step,
+    #     )
+    #     self.loss_metrics.reset()
 
     def configure_optimizers(self) -> torch.optim.Optimizer:
         optimizer = torch.optim.Adam(self.network.parameters(), lr=self.learning_rate)
         return optimizer
+
+
+# fabric run model --accelerator=cuda --strategy=ddp --devices=2 main.py

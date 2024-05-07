@@ -96,11 +96,15 @@ class VICRegEncoderAtari(nn.Module):
         cov_z_a = torch.matmul(z_a.t(), z_a) / (n - 1)
         cov_z_b = torch.matmul(z_b.t(), z_b) / (n - 1)
         cov_loss = (
-            cov_z_a.masked_select(~torch.eye(self.feature_dim, dtype=torch.bool, device=cov_z_a.device))
+            cov_z_a.masked_select(
+                ~torch.eye(self.feature_dim, dtype=torch.bool, device=cov_z_a.device)
+            )
             .pow_(2)
             .sum()
             / self.feature_dim
-            + cov_z_b.masked_select(~torch.eye(self.feature_dim, dtype=torch.bool, device=cov_z_b.device))
+            + cov_z_b.masked_select(
+                ~torch.eye(self.feature_dim, dtype=torch.bool, device=cov_z_b.device)
+            )
             .pow_(2)
             .sum()
             / self.feature_dim
@@ -111,12 +115,6 @@ class VICRegEncoderAtari(nn.Module):
         return la * inv_loss + mu * var_loss + nu * cov_loss
 
     def augment(self, x):
-        # ref = transforms.ToPILImage()(x[0])
-        # ref.show()
-        # transforms_train = torchvision.transforms.Compose([
-        #     transforms.RandomResizedCrop(96, scale=(0.66, 1.0))])
-        # transforms_train = transforms.RandomErasing(p=1)
-        # print(x.max())
         ax = x + torch.randn_like(x) * 0.1
         ax = nn.functional.upsample(
             nn.functional.avg_pool2d(ax, kernel_size=2), scale_factor=2, mode="bilinear"

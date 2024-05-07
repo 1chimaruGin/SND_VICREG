@@ -4,6 +4,7 @@ import argparse
 import numpy as np
 import lightning as L
 from lightning.fabric import Fabric
+from torch.utils.data import BatchSampler, RandomSampler, DistributedSampler
 from networks.PPO_Modules import TYPE
 from networks.PPO import PPOLightning
 from networks.RNDModelAtari import VICRegModelAtari
@@ -140,15 +141,37 @@ class PPOAtariSNDAgent:
             "adv_values": adv_values,
             "ref_values": ref_values,
         }
-        return batch
+        indexes = list(range(states.shape[0]))
+        # if self.fabric.world_size > 1:
+        #     batch = self.fabric.all_gather(batch)
+        #     sampler = DistributedSampler(
+        #         indexes, num_replicas=self.fabric.world_size, rank=self.fabric.global_rank, shuffle=True
+        #     )
+        # else:
+        sampler = RandomSampler(indexes)
+        sampler = BatchSampler(
+            sampler, batch_size=self.algorithm.batch_size, drop_last=False
+        )
+        return batch, sampler
 
-    def train_ppo(self, batch):
-        for _ in range(self.algorithm.ppo_epochs):
-            for batch_ofs in range(
-                0, self.algorithm.trajectory_size, self.algorithm.batch_size
-            ):
-                batch["batch_ofs"] = batch_ofs
-                loss = self.algorithm.training_step(batch)
+    def prepare_snd_training(
+        self, memory: GenericTrajectoryBuffer, indices: torch.Tensor
+    ):
+        sample, size = memory.sample_batches(indices)
+        batch = {
+            "states": sample.state,
+            "next_states": sample.next_state,
+        }
+        return batch, size
+
+    def train_ppo(self, batch, sampler):
+        for epoch in range(self.algorithm.ppo_epochs):
+            # if self.fabric.world_size > 1:
+            #     sampler.sampler.set_epoch(epoch)
+            for idxs in sampler:
+                loss = self.algorithm.training_step(
+                    {k: v[idxs] for k, v in batch.items()}
+                )
                 self.algorithm_optimizer.zero_grad()
                 self.fabric.backward(loss)
                 self.fabric.clip_gradients(
@@ -156,21 +179,15 @@ class PPOAtariSNDAgent:
                 )
                 self.algorithm_optimizer.step()
 
-    def train_snd(self, batch):
-        sample, size = batch
+    def train_snd(self, batch, size):
         for i in range(size):
-            motivation_loss = self.motivation.training_step(sample, i)
+            loss = self.motivation.training_step({k: v[i] for k, v in batch.items()})
             self.motivation_optimizer.zero_grad()
-            self.fabric.backward(motivation_loss)
+            self.fabric.backward(loss)
             self.fabric.clip_gradients(
                 self.motivation, self.motivation_optimizer, max_norm=0.5
             )
             self.motivation_optimizer.step()
-
-    def prepare_snd_training(
-        self, memory: GenericTrajectoryBuffer, indices: torch.Tensor
-    ):
-        return memory.sample_batches(indices)
 
     def train(self, state0, value, action0, probs0, state1, reward, mask):
         self.memory.add(
@@ -186,11 +203,9 @@ class PPOAtariSNDAgent:
         motivation_indices = self.motivation_memory.indices()
 
         if indices is not None:
-            s1 = time.time()
-            batch = self.prepare_ppo_training(self.memory, indices)
+            batch, sampler = self.prepare_ppo_training(self.memory, indices)
             s2 = time.time()
-            print("[INFO] prepare time {0:.2f}".format(s2 - s1))
-            self.train_ppo(batch)
+            self.train_ppo(batch, sampler)
             s3 = time.time()
             print(
                 "Trajectory {0:d} batch size {1:d} epochs {2:d} training time {3:.2f}s \n".format(
@@ -200,18 +215,16 @@ class PPOAtariSNDAgent:
                     s3 - s2,
                 )
             )
-            # self.algorithm.train(self.memory, indices)
             self.memory.clear()
 
         if motivation_indices is not None:
             start = time.time()
-            batch = self.prepare_snd_training(
+            batch, size = self.prepare_snd_training(
                 self.motivation_memory, motivation_indices
             )
-            self.train_snd(batch)
+            self.train_snd(batch, size)
             end = time.time()
             print(f"[INFO] CND training time: {end - start}s")
-            # self.motivation.train(self.motivation_memory, motivation_indices)
             self.motivation_memory.clear()
 
     def save(self, path):
