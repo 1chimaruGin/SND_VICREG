@@ -96,11 +96,11 @@ class VICRegEncoderAtari(nn.Module):
         cov_z_a = torch.matmul(z_a.t(), z_a) / (n - 1)
         cov_z_b = torch.matmul(z_b.t(), z_b) / (n - 1)
         cov_loss = (
-            cov_z_a.masked_select(~torch.eye(self.feature_dim, dtype=torch.bool))
+            cov_z_a.masked_select(~torch.eye(self.feature_dim, dtype=torch.bool, device=cov_z_a.device))
             .pow_(2)
             .sum()
             / self.feature_dim
-            + cov_z_b.masked_select(~torch.eye(self.feature_dim, dtype=torch.bool))
+            + cov_z_b.masked_select(~torch.eye(self.feature_dim, dtype=torch.bool, device=cov_z_b.device))
             .pow_(2)
             .sum()
             / self.feature_dim
