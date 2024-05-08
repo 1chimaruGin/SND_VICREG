@@ -1,14 +1,9 @@
-import os
 import gym
 import time
 import torch
 import platform
 import numpy as np
-from tqdm import tqdm
-from random import random
-from datetime import datetime
 from lightning.fabric import Fabric
-from lightning.fabric.loggers import TensorBoardLogger
 from torch.utils.tensorboard import SummaryWriter
 from networks.PPO_Modules import TYPE
 from agent.PPOAtariAgent import PPOAtariSNDAgent
@@ -32,12 +27,6 @@ if __name__ == "__main__":
     for i in range(torch.cuda.device_count()):
         print("{0:d}. {1:s}".format(i, torch.cuda.get_device_name(i)))
     run_name = f"Running_{args.seed}_{int(time.time())}"
-    logger = TensorBoardLogger(
-        root_dir=os.path.join(
-            "logs", "fabric_logs", datetime.today().strftime("%Y-%m-%d_%H-%M-%S")
-        ),
-        name=run_name,
-    )
     fabric = Fabric()
     rank = fabric.global_rank
     world_size = fabric.world_size
@@ -86,7 +75,7 @@ if __name__ == "__main__":
     n_env = config.n_env
     trial = trial + config.shift
     step_counter = StepCounter(int(config.steps * 1e6))
-    writer = SummaryWriter()
+    writer = SummaryWriter(log_dir='runs/exp1')
 
     analytic = ResultCollector()
     analytic.init(
