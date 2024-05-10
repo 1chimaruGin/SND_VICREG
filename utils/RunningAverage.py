@@ -76,25 +76,28 @@ class RunningStatsSimple:
 
 
 class RunningStats:
-    def __init__(self, shape, device, n=1):
+    def __init__(self, shape, n=1):
         self.n = n
         if n > 1:
             shape = (n,) + shape
-            self.count = torch.ones((n, 1), device=device)
+            self.count = torch.ones((n, 1))
         else:
             self.count = 1
         self.eps = 0.0000001
-        self.max = torch.zeros(shape, device=device)
-        self.sum = torch.zeros(shape, device=device)
-        self.mean = torch.zeros(shape, device=device)
-        self.var = 0.01 * torch.ones(shape, device=device)
+        self.max = torch.zeros(shape)
+        self.sum = torch.zeros(shape)
+        self.mean = torch.zeros(shape)
+        self.var = 0.01 * torch.ones(shape)
         self.std = (self.var**0.5) + self.eps
 
     def update(self, x, reduction="mean"):
         self.count += 1
         if x.device != self.mean.device:
-            x = x.to(self.mean.device)
-
+            self.max = self.max.to(x.device)
+            self.sum = self.sum.to(x.device)
+            self.mean = self.mean.to(x.device)
+            self.var = self.var.to(x.device)
+            self.std = self.std.to(x.device)
         mean = None
         var = None
         max = torch.maximum(self.max, x)
@@ -107,11 +110,9 @@ class RunningStats:
             self.sum += x
             mean = self.mean + (x - self.mean) / self.count
             var = self.var + ((x - self.mean) * (x - mean))
-
         self.max = max
         self.mean = mean
         self.var = var
-
         self.std = ((self.var / self.count) ** 0.5) + self.eps
 
     def reset(self, i):

@@ -134,17 +134,13 @@ class GenericReplayBuffer(GenericBuffer):
     def sample(self, indices):
         values = [self.memory[k][indices] for k in self.keys]
         result = self.transition(*values)
-
         return result
 
     def sample_batches(self, indices, batch_size=0):
         if batch_size == 0:
             batch_size = self.batch_size
-
         original_batch = len(indices)
-
         values = []
-
         for k in self.keys:
             v = self.memory[k][indices]
             values.append(v.reshape(-1, batch_size, *v.shape[1:]))

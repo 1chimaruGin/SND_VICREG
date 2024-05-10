@@ -28,7 +28,6 @@ class ST_DIM_CNN(nn.Module):
         super().__init__()
         self.feature_size = feature_dim
         self.hidden_size = self.feature_size
-
         self.input_channels = input_shape[0]
         self.input_height = input_shape[1]
         self.input_width = input_shape[2]

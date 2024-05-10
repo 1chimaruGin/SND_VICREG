@@ -2,11 +2,15 @@ import gym
 import time
 import torch
 import platform
+import argparse
 import numpy as np
+import torch.nn as nn
+from typing import Union, Dict
 from lightning.fabric import Fabric
+from lightning.fabric.wrappers import _FabricModule
 from torch.utils.tensorboard import SummaryWriter
 from networks.PPO_Modules import TYPE
-from agent.PPOAtariAgent import PPOAtariSNDAgent
+from agent.PPOAtariAgent import PPOAtariSNDAgent, build_agent
 
 # from plots.paths import models_root
 from utils.AtariWrapper import WrapperHardAtari
@@ -15,6 +19,43 @@ from utils.ResultCollector import ResultCollector
 from utils.RunningAverage import RunningAverageWindow, StepCounter
 from utils.TimeEstimator import PPOTimeEstimator
 from utils.utils import get_args
+
+
+def train(
+    fabric: Fabric,
+    agent: Union[nn.Module, _FabricModule],
+    opt_algorithm: torch.optim.Optimizer,
+    opt_motivation: torch.optim.Optimizer,
+    data: Dict[str, torch.Tensor],
+    config: argparse.Namespace,
+):
+    agent.setup(data)
+    batch, batch_sampler = agent.prepare_algorithm()
+    if batch_sampler is not None:
+        s1 = time.time()
+        for epoch in range(config.epochs):
+            for idxs in batch_sampler:
+                batch = {k: v[idxs] for k, v in batch.items()}
+                loss = agent.algorithm_loss(**batch)
+                opt_algorithm.zero_grad(set_to_none=True)
+                fabric.backward(loss)
+                fabric.clip_gradients(agent.algorithm, opt_algorithm, max_norm=0.5)
+                opt_algorithm.step()
+        s2 = time.time()
+        print(f"[INFO] epoch: {epoch}, time: {s2 - s1}, loss: {loss}")
+
+    motivation_batch, size = agent.prepare_motivation()
+    if batch is not None:
+        m1 = time.time()
+        for i in range(size):
+            loss = agent.motivation_loss({k: v[i] for k, v in motivation_batch.items()})
+            opt_motivation.zero_grad(set_to_none=True)
+            fabric.backward(loss)
+            fabric.clip_gradients(agent.motivation, opt_motivation, max_norm=0.5)
+            opt_motivation.step()
+        m2 = time.time()
+        print(f"[INFO] motivation time: {m2 - m1}, loss: {loss}")
+
 
 if __name__ == "__main__":
     print(platform.system())
@@ -49,13 +90,11 @@ if __name__ == "__main__":
         config.num_threads,
     )
 
-    def process_state(state):
+    def process_state(state, _preprocess=None):
         if _preprocess is None:
-            processed_state = torch.tensor(state, dtype=torch.float32).to(
-                _config.device
-            )
+            processed_state = torch.tensor(state, dtype=torch.float32)
         else:
-            processed_state = _preprocess(state).to(_config.device)
+            processed_state = _preprocess(state)
         return processed_state
 
     input_shape = env.observation_space.shape
@@ -69,13 +108,22 @@ if __name__ == "__main__":
     _preprocess = None
 
     # experiment.add_preprocess(encode_state)
-    agent = PPOAtariSNDAgent(input_shape, action_dim, config, TYPE.discrete, fabric)
+    # agent = PPOAtariSNDAgent(input_shape, action_dim, config, TYPE.discrete, fabric)
+    agent = build_agent(
+        fabric, input_shape, action_dim, config, TYPE.discrete
+    )
+    opt_algorithm = fabric.setup_optimizers(
+        torch.optim.Adam(agent.algorithm.parameters(), lr=config.lr)
+    )
+    opt_motivation = fabric.setup_optimizers(
+        torch.optim.Adam(agent.motivation.parameters(), lr=config.motivation_lr)
+    )
 
     config = _config
     n_env = config.n_env
     trial = trial + config.shift
     step_counter = StepCounter(int(config.steps * 1e6))
-    writer = SummaryWriter(log_dir='runs/exp1')
+    writer = SummaryWriter(log_dir="runs/exp1")
 
     analytic = ResultCollector()
     analytic.init(
@@ -108,7 +156,8 @@ if __name__ == "__main__":
         next_state, reward, done, info = _env.step(agent.convert_action(action0))
 
         ext_reward = torch.tensor(reward, dtype=torch.float32)
-        int_reward = agent.motivation(state0, error_flag=True)[1].cpu().clip(0.0, 1.0)
+        # int_reward = agent.motivation(state0, error_flag=True)[1].cpu().clip(0.0, 1.0)
+        int_reward = agent.motivation.reward(state0).cpu().clip(0.0, 1.0)
 
         if info is not None:
             if "normalised_score" in info:
@@ -120,7 +169,7 @@ if __name__ == "__main__":
                 score = torch.tensor(info["raw_score"]).unsqueeze(-1)
                 analytic.update(score=score)
 
-        error = agent.motivation(state0, error_flag=True)[0]
+        error = agent.motivation.error(state0, error_flag=True)[0]
         # cnd_state = agent.network.cnd_model.preprocess(state0)
         cnd_state = agent.cnd_model.preprocess(state0)
         analytic.update(
@@ -212,7 +261,19 @@ if __name__ == "__main__":
         done = torch.tensor(1 - done, dtype=torch.float32)
         analytic.end_step()
 
-        agent.train(state0, value, action0, probs0, state1, reward, done)
+        data = {
+            "state": state0,
+            "value": value,
+            "action": action0,
+            "probs": probs0,
+            "reward": reward,
+            "mask": done,
+            "next_state": state1,
+        }
+        # agent.train(state0, value, action0, probs0, state1, reward, done)
+        train(
+            
+        )
 
         state0 = state1
         time_estimator.update(n_env)

@@ -27,14 +27,12 @@ def init_orthogonal(layer, gain=1.0):
 class PPOAtariNetworkSND(torch.nn.Module):
     def __init__(self, input_shape, action_dim, config, head):
         super(PPOAtariNetworkSND, self).__init__()
-
         self.input_shape = input_shape
         self.action_dim = action_dim
         input_channels = self.input_shape[0]
         input_height = self.input_shape[1]
         input_width = self.input_shape[2]
         self.feature_dim = 512
-
         fc_inputs_count = 128 * (input_width // 8) * (input_height // 8)
 
         self.features = nn.Sequential(

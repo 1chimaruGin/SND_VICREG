@@ -1,59 +1,42 @@
+import time
 import torch
-import lightning as L
-from .RNDModelAtari import VICRegModelAtari
-from utils.RunningAverage import FabricRunningStats
+import torch.nn as nn
+from RNDModelAtari import VICRegModelAtari
+from utils.RunningAverage import RunningStats
 
 
-class SNDMotivationLightning(L.LightningModule):
-    def __init__(self, network: VICRegModelAtari, learning_rate: float, eta: int = 1):
-        super().__init__()
-        self.network = network
+class SNDMotivation(nn.Module):
+    def __init__(self, network: VICRegModelAtari, eta=1):
+        super(SNDMotivation, self).__init__()
         self.eta = eta
-        self.learning_rate = learning_rate
-        self.reward_stats = FabricRunningStats(1)
+        self.network = network
+        self.reward_stats = RunningStats(1)
 
-    def configure_optimizers(self) -> torch.optim.Optimizer:
-        optimizer = torch.optim.Adam(self.network.parameters(), lr=self.learning_rate)
-        return optimizer
-
-    # def training_step(self, batch, idx):
-    #     states = batch.state[idx]
-    #     next_states = batch.next_state[idx]
-    #     print("State shape", states.shape)
-    #     print("Next state shape", next_states.shape)
-    #     loss = self.network.loss_function(states, next_states)
-    #     return loss
-
-    def training_step(self, batch):
-        states, next_states = batch["states"], batch["next_states"]
-        loss = self.network.loss_function(states, next_states)
-        return loss
-
-    def forward(
-        self,
-        state,
-        error_flag=False,
-    ):
-        if error_flag:
-            with torch.no_grad():
-                prediction, target = self.network(state)
-                error = self.network.k_distance(
-                    self.network.config.cnd_error_k,
-                    prediction,
-                    target,
-                    reduction="mean",
-                )
-                reward = error * self.eta
-                return error, reward
+    def forward(self, state):
         return self.network(state)
 
-    def error(self, state):
-        with torch.no_grad():
-            prediction, target = self.network(state)
-            error = self.network.k_distance(
-                self.network.config.cnd_error_k, prediction, target, reduction="mean"
-            )
-        return error
+    def loss_function(self, state0, state1):
+        return self.network.loss_function(state0, state1)
+
+    # def train(self, memory, indices):
+    #     if indices:
+    #         start = time.time()
+    #         sample, size = memory.sample_batches(indices)
+
+    #         for i in range(size):
+    #             states = sample.state[i].to(self.device)
+    #             next_states = sample.next_state[i].to(self.device)
+
+    #             self.optimizer.zero_grad()
+    #             loss = self.network.loss_function(states, next_states)
+    #             loss.backward()
+    #             self.optimizer.step()
+
+    #         end = time.time()
+    #         print("CND motivation training time {0:.2f}s".format(end - start))
+
+    def error(self, state0):
+        return self.network.error(state0)
 
     def reward_sample(self, memory, indices):
         sample = memory.sample(indices)
@@ -68,4 +51,4 @@ class SNDMotivationLightning(L.LightningModule):
         self.network.update_state_average(state)
 
     def update_reward_average(self, reward):
-        self.reward_stats.update(reward)
+        self.reward_stats.update(reward.to(self.device))
