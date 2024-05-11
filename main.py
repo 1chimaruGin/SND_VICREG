@@ -1,12 +1,16 @@
 import gym
 import time
 import torch
+import argparse
 import platform
 import numpy as np
+import torch.nn as nn
+from typing import Dict, Union
 from lightning.fabric import Fabric
+from lightning.fabric.wrappers import _FabricModule
 from torch.utils.tensorboard import SummaryWriter
 from networks.PPO_Modules import TYPE
-from agent.PPOAtariAgent import PPOAtariSNDAgent
+from agent.PPOAtariAgent import PPOAtariSNDAgent, build_agent
 
 # from plots.paths import models_root
 from utils.AtariWrapper import WrapperHardAtari
@@ -15,6 +19,44 @@ from utils.ResultCollector import ResultCollector
 from utils.RunningAverage import RunningAverageWindow, StepCounter
 from utils.TimeEstimator import PPOTimeEstimator
 from utils.utils import get_args
+
+
+def train(
+    fabric: Fabric,
+    agent: Union[nn.Module, _FabricModule, PPOAtariSNDAgent],
+    opt_algorithm: torch.optim.Optimizer,
+    opt_motivation: torch.optim.Optimizer,
+    data: list,
+    config: argparse.Namespace,
+):
+    batch, sampler, motivation_batch, motivation_size = agent.setup(*data)
+    if batch is not None:
+        s1 = time.time()
+        for epoch in range(config.ppo_epochs):
+            for idxs in sampler:
+                batch = {k: v[idxs] for k, v in batch.items()}
+                loss = agent.algorithm.training_step(
+                    {k: v[idxs] for k, v in batch.items()}
+                )
+                opt_algorithm.zero_grad(set_to_none=True)
+                fabric.backward(loss)
+                fabric.clip_gradients(agent.algorithm, opt_algorithm, max_norm=0.5)
+                opt_algorithm.step()
+        s2 = time.time()
+        print(f"[INFO] epoch: {epoch}, time: {s2 - s1}, loss: {loss}")
+
+    if motivation_batch is not None:
+        m1 = time.time()
+        for i in range(motivation_size):
+            motivation_batch = {k: v[i] for k, v in motivation_batch.items()}
+            loss = agent.motivation.training_step(motivation_batch)
+            opt_motivation.zero_grad(set_to_none=True)
+            fabric.backward(loss)
+            fabric.clip_gradients(agent.motivation, opt_motivation, max_norm=0.5)
+            opt_motivation.step()
+        m2 = time.time()
+        print(f"[INFO] motivation epoch: {i}, time: {m2 - m1}, loss: {loss}")
+        
 
 if __name__ == "__main__":
     print(platform.system())
@@ -49,13 +91,11 @@ if __name__ == "__main__":
         config.num_threads,
     )
 
-    def process_state(state):
+    def process_state(state, fabric: Fabric):
         if _preprocess is None:
-            processed_state = torch.tensor(state, dtype=torch.float32).to(
-                _config.device
-            )
+            processed_state = torch.tensor(state, dtype=torch.float32).to(fabric.device)
         else:
-            processed_state = _preprocess(state).to(_config.device)
+            processed_state = _preprocess(state).to(fabric.device)
         return processed_state
 
     input_shape = env.observation_space.shape
@@ -69,7 +109,16 @@ if __name__ == "__main__":
     _preprocess = None
 
     # experiment.add_preprocess(encode_state)
-    agent = PPOAtariSNDAgent(input_shape, action_dim, config, TYPE.discrete, fabric)
+    # agent = PPOAtariSNDAgent(input_shape, action_dim, config, TYPE.discrete, fabric)
+    agent = build_agent(
+        fabric, input_shape, action_dim, config, TYPE.discrete
+    )
+    opt_algorithm = fabric.setup_optimizers(
+        torch.optim.Adam(agent.algorithm.parameters(), lr=config.lr)
+    )
+    opt_motivation = fabric.setup_optimizers(
+        torch.optim.Adam(agent.motivation.parameters(), lr=config.motivation_lr)
+    )
 
     config = _config
     n_env = config.n_env
@@ -98,7 +147,7 @@ if __name__ == "__main__":
     for i in range(n_env):
         s[i] = _env.reset(i)[0]
 
-    state0 = process_state(s)
+    state0 = process_state(s, fabric)
 
     # pbar = tqdm(total=step_counter.limit, desc="Training")
     while step_counter.running():
@@ -207,12 +256,16 @@ if __name__ == "__main__":
 
             next_state[i] = _env.reset(index)
 
-        state1 = process_state(next_state)
+        state1 = process_state(next_state, fabric)
         reward = torch.cat([ext_reward, int_reward], dim=1)
         done = torch.tensor(1 - done, dtype=torch.float32)
         analytic.end_step()
+        data = [state0, value, action0, probs0, state1, reward, done]
+        train(
+            fabric, agent, opt_algorithm, opt_motivation, data, config
+        )
 
-        agent.train(state0, value, action0, probs0, state1, reward, done)
+        # agent.train(state0, value, action0, probs0, state1, reward, done)
 
         state0 = state1
         time_estimator.update(n_env)

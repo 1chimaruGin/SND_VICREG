@@ -1,8 +1,5 @@
-import time
-import sys
 import torch
-import lightning as L
-from torchmetrics import MeanMetric
+import torch.nn as nn
 from enum import Enum
 from typing import Dict
 
@@ -13,7 +10,7 @@ class MODE(Enum):
     generator = 2
 
 
-class PPOLightning(L.LightningModule):
+class PPOLightning(nn.Module):
     def __init__(
         self,
         network: torch.nn.Module,
@@ -101,13 +98,6 @@ class PPOLightning(L.LightningModule):
         loss = self.calc_loss(states_v, batch_ref_v, batch_adv_v, actions_v, probs_v)
         # self.loss_metrics.update(loss)
         return loss
-
-    # def training_epoch_end(self, global_step: int):
-    #     self.logger.log_metrics(
-    #         {"Loss/mean_loss": self.loss_metrics.compute()},
-    #         global_step,
-    #     )
-    #     self.loss_metrics.reset()
 
     def configure_optimizers(self) -> torch.optim.Optimizer:
         optimizer = torch.optim.Adam(self.network.parameters(), lr=self.learning_rate)

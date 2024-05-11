@@ -1,10 +1,10 @@
 import torch
-import lightning as L
+import torch.nn as nn
 from .RNDModelAtari import VICRegModelAtari
 from utils.RunningAverage import FabricRunningStats
 
 
-class SNDMotivationLightning(L.LightningModule):
+class SNDMotivationLightning(nn.Module):
     def __init__(self, network: VICRegModelAtari, learning_rate: float, eta: int = 1):
         super().__init__()
         self.network = network
