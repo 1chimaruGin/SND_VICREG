@@ -98,8 +98,7 @@ class RunningStats:
             self.mean = self.mean.to(x.device)
             self.var = self.var.to(x.device)
             self.std = self.std.to(x.device)
-        mean = None
-        var = None
+        mean, var = None, None
         max = torch.maximum(self.max, x)
 
         if reduction == "mean":

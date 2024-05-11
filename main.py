@@ -90,18 +90,17 @@ if __name__ == "__main__":
         config.num_threads,
     )
 
-    def process_state(state, _preprocess=None):
+    def process_state(state, fabric: Fabric = fabric):
         if _preprocess is None:
-            processed_state = torch.tensor(state, dtype=torch.float32)
+            processed_state = torch.tensor(state, dtype=torch.float32).to(fabric.device)
         else:
-            processed_state = _preprocess(state)
+            processed_state = _preprocess(state).to(fabric.device)
         return processed_state
 
     input_shape = env.observation_space.shape
     action_dim = env.action_space.n
 
     print("Start training")
-    # experiment = ExperimentNEnvPPO(env_name, env, config)
     _env_name = env_name
     _env = env
     _config = config
