@@ -133,10 +133,10 @@ class PPOAtariSNDAgent(nn.Module):
                 )
             else:
                 ref_values, adv_values = self.algorithm.calc_advantage(
-                    values, rewards, dones, self.gamma[0], self.n_env
+                    values, rewards, dones, self.algorithm.gamma[0], self.algorithm.n_env
                 )
                 adv_values *= self.algorithm.ext_adv_scale
-            permutation = torch.randperm(self.trajectory_size)
+            permutation = torch.randperm(self.algorithm.trajectory_size)
             states = states.reshape(-1, *states.shape[2:])[permutation]
             actions = actions.reshape(-1, *actions.shape[2:])[permutation]
             probs = probs.reshape(-1, *probs.shape[2:])[permutation]
