@@ -23,6 +23,7 @@ class PPOAtariSNDAgent(nn.Module):
         config: argparse.Namespace,
         action_type: TYPE,
     ):
+        super(PPOAtariSNDAgent, self).__init__()
         self.state_dim = state_dim
         self.action_dim = action_dim
         self.config = config
