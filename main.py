@@ -35,7 +35,7 @@ def train(
         s1 = time.time()
         for epoch in range(config.ppo_epochs):
             for idxs in batch_sampler:
-                batch = {k: v[idxs] for k, v in batch.items()}
+                batch = {k: v[idxs].to(fabric.device) for k, v in batch.items()}
                 loss = agent.algorithm_loss(**batch)
                 opt_algorithm.zero_grad(set_to_none=True)
                 fabric.backward(loss)
@@ -48,7 +48,7 @@ def train(
     if batch is not None:
         m1 = time.time()
         for i in range(size):
-            loss = agent.motivation_loss({k: v[i] for k, v in motivation_batch.items()})
+            loss = agent.motivation_loss({k: v[i].to(fabric.device) for k, v in motivation_batch.items()})
             opt_motivation.zero_grad(set_to_none=True)
             fabric.backward(loss)
             fabric.clip_gradients(agent.motivation, opt_motivation, max_norm=0.5)
