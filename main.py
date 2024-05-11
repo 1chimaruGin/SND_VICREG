@@ -47,8 +47,9 @@ def train(
     if motivation_batch is not None:
         m1 = time.time()
         for i in range(motivation_size):
-            motivation_batch = {k: v[i] for k, v in motivation_batch.items()}
-            loss = agent.motivation.training_step(motivation_batch)
+            for k, v in motivation_batch.items():
+                print("shape =>", k, v[i].shape)
+            loss = agent.motivation.training_step({k: v[i] for k, v in motivation_batch.items()})
             opt_motivation.zero_grad(set_to_none=True)
             fabric.backward(loss)
             fabric.clip_gradients(agent.motivation, opt_motivation, max_norm=0.5)
