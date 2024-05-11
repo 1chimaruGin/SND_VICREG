@@ -112,14 +112,14 @@ class PPOAtariSNDAgent(nn.Module):
             if self.motivation:
                 ext_reward = rewards[:, :, 0].unsqueeze(-1)
                 int_reward = rewards[:, :, 1].unsqueeze(-1)
-                ext_ref_values, ext_adv_values = self.calc_advantage(
+                ext_ref_values, ext_adv_values = self.algorithm.calc_advantage(
                     values[:, :, 0].unsqueeze(-1),
                     ext_reward,
                     dones,
                     self.gamma[0],
                     self.n_env,
                 )
-                int_ref_values, int_adv_values = self.calc_advantage(
+                int_ref_values, int_adv_values = self.algorithm.calc_advantage(
                     values[:, :, 1].unsqueeze(-1),
                     int_reward,
                     dones,
