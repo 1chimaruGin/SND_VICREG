@@ -26,8 +26,6 @@ class SNDMotivationLightning(nn.Module):
 
     def training_step(self, batch):
         states, next_states = batch["states"], batch["next_states"]
-        print("State shape", states.shape)
-        print("Next state shape", next_states.shape)
         loss = self.network.loss_function(states, next_states)
         return loss
 
