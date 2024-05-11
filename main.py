@@ -271,7 +271,7 @@ if __name__ == "__main__":
         }
         # agent.train(state0, value, action0, probs0, state1, reward, done)
         train(
-            agent, data, opt_algorithm, opt_motivation, data, config
+            fabric, agent, opt_algorithm, opt_motivation, data, config
         )
 
         state0 = state1
