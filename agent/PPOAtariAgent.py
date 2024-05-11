@@ -171,9 +171,9 @@ class PPOAtariSNDAgent(nn.Module):
         return None, None
 
     def algorithm_loss(self, states, actions, adv_values, ref_values, probs):
-        return self.algorithm.loss_function(
+        return self.algorithm(
             states, ref_values, adv_values, actions, probs
-        )
+        )[-1]
 
     def motivation_loss(self, state, next_state):
         return self.motivation.loss_function(state, next_state)

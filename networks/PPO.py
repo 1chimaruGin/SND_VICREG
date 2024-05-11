@@ -42,8 +42,8 @@ class PPO(nn.Module):
         self.critic_loss_weight = critic_loss_weight
         self.gamma = [float(g) for g in p_gamma.split(",")]
 
-    def loss_function(self, states, ref_value, adv_value, old_actions, old_probs):
-        values, _, probs = self.algorithm(states)
+    def forward(self, states, ref_value, adv_value, old_actions, old_probs):
+        values, actions, probs = self.algorithm(states)
         if self.motivation:
             ext_value = values[:, 0]
             int_value = values[:, 1]
@@ -67,7 +67,7 @@ class PPO(nn.Module):
             + loss_policy * self.actor_loss_weight
             + self.beta * entropy
         )
-        return loss
+        return [values, actions, probs], loss
 
     def calc_advantage(self, values, rewards, dones, gamma, n_env):
         buffer_size = rewards.shape[0]
@@ -80,9 +80,6 @@ class PPO(nn.Module):
             returns[n] = last_gae + values[n]
             advantages[n] = last_gae
         return returns, advantages
-
-    def forward(self, states):
-        return self.algorithm(states)
 
 
 # fabric run model --accelerator=cuda --strategy=ddp --devices=2 main.py
