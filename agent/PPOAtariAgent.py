@@ -77,12 +77,12 @@ class PPOAtariSNDAgent(nn.Module):
 
     def convert_action(self, action):
         if self.action_type == TYPE.discrete:
-            a = torch.argmax(action, dim=1).numpy()
+            a = torch.argmax(action, dim=1).cpu().numpy()
             return a
         if self.action_type == TYPE.continuous:
-            return action.squeeze(0).numpy()
+            return action.squeeze(0).cpu().numpy()
         if self.action_type == TYPE.multibinary:
-            return torch.argmax(action, dim=1).numpy()
+            return torch.argmax(action, dim=1).cpu().numpy()
 
     def setup(self, data):
         self.memory.add(

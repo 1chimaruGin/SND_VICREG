@@ -19,7 +19,7 @@ class GenericCollector:
 
     def add(self, key, shape):
         self.keys.append(key)
-        self._buffer[key] = RunningStats(shape, "cpu", n=self._n_env)
+        self._buffer[key] = RunningStats(shape, n=self._n_env)
 
     def update(self, **kwargs):
         for k in kwargs:

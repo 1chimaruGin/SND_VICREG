@@ -93,11 +93,7 @@ class RunningStats:
     def update(self, x, reduction="mean"):
         self.count += 1
         if x.device != self.mean.device:
-            self.max = self.max.to(x.device)
-            self.sum = self.sum.to(x.device)
-            self.mean = self.mean.to(x.device)
-            self.var = self.var.to(x.device)
-            self.std = self.std.to(x.device)
+            x = x.to(self.mean.device)
         mean, var = None, None
         max = torch.maximum(self.max, x)
 
