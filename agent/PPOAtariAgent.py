@@ -101,6 +101,7 @@ class PPOAtariSNDAgent(nn.Module):
         memory = self.memory
         indices = memory.indices()
         if indices is not None:
+            print("Preparing algorithm")
             sample = memory.sample(indices, False)
             states = sample.state
             values = sample.value
@@ -155,6 +156,7 @@ class PPOAtariSNDAgent(nn.Module):
                 sampler, self.config.batch_size, drop_last=False
             )
             return batch, batch_sampler
+        return None, None
 
     def prepare_motivation(self):
         memory = self.motivation_memory
@@ -166,6 +168,7 @@ class PPOAtariSNDAgent(nn.Module):
                 "next_states": sample.next_state,
             }
             return batch, size
+        return None, None
 
     def algorithm_loss(self, states, actions, adv_values, ref_values, probs):
         return self.algorithm.loss_function(
