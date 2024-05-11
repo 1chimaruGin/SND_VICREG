@@ -29,7 +29,7 @@ def train(
     data: list,
     config: argparse.Namespace,
 ):
-    batch, sampler, motivation_batch, motivation_size = agent.setup(*data)
+    batch, sampler, motivation_batch, motivation_size = agent.setup_data(*data)
     if batch is not None:
         s1 = time.time()
         for epoch in range(config.ppo_epochs):
