@@ -35,7 +35,7 @@ def train(
         s1 = time.time()
         for epoch in range(config.ppo_epochs):
             for idxs in batch_sampler:
-                batch = {k: v[idxs].to(fabric.device) for k, v in batch.items()}
+                batch = {k: v[idxs] for k, v in batch.items()}
                 loss = agent.algorithm_loss(**batch)
                 opt_algorithm.zero_grad(set_to_none=True)
                 fabric.backward(loss)
