@@ -34,6 +34,8 @@ def train(
         s1 = time.time()
         for epoch in range(config.ppo_epochs):
             for idxs in sampler:
+                for k, v in batch.items():
+                    print(k, v.shape)
                 batch = {k: v[idxs] for k, v in batch.items()}
                 loss = agent.algorithm.training_step(
                     {k: v[idxs] for k, v in batch.items()}
