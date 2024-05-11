@@ -116,15 +116,15 @@ class PPOAtariSNDAgent(nn.Module):
                     values[:, :, 0].unsqueeze(-1),
                     ext_reward,
                     dones,
-                    self.gamma[0],
-                    self.n_env,
+                    self.algorithm.gamma[0],
+                    self.algorithm.n_env,
                 )
                 int_ref_values, int_adv_values = self.algorithm.calc_advantage(
                     values[:, :, 1].unsqueeze(-1),
                     int_reward,
                     dones,
-                    self.gamma[1],
-                    self.n_env,
+                    self.algorithm.gamma[1],
+                    self.algorithm.n_env,
                 )
                 ref_values = torch.cat([ext_ref_values, int_ref_values], dim=2)
                 adv_values = (
