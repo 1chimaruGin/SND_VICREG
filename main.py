@@ -156,7 +156,7 @@ if __name__ == "__main__":
 
         ext_reward = torch.tensor(reward, dtype=torch.float32)
         # int_reward = agent.motivation(state0, error_flag=True)[1].cpu().clip(0.0, 1.0)
-        int_reward = agent.motivation.reward(state0).cpu().clip(0.0, 1.0)
+        int_reward = agent.motivation(state0, out='reward').cpu().clip(0.0, 1.0)
 
         if info is not None:
             if "normalised_score" in info:
@@ -168,7 +168,7 @@ if __name__ == "__main__":
                 score = torch.tensor(info["raw_score"]).unsqueeze(-1)
                 analytic.update(score=score)
 
-        error = agent.motivation.error(state0, error_flag=True)[0]
+        error = agent.motivation(state0, out='error')
         # cnd_state = agent.network.cnd_model.preprocess(state0)
         cnd_state = agent.cnd_model.preprocess(state0)
         analytic.update(

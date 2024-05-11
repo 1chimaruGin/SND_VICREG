@@ -12,8 +12,13 @@ class SNDMotivation(nn.Module):
         self.network = network
         self.reward_stats = RunningStats(1)
 
-    def forward(self, state):
-        return self.network(state)
+    def forward(self, state, out: str = "reward"):
+        if out == "reward":
+            return self.reward(state)
+        elif out == "error":
+            return self.error(state)
+        else:
+            return self.network(state)
 
     def loss_function(self, state0, state1):
         return self.network.loss_function(state0, state1)
