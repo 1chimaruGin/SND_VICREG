@@ -33,7 +33,7 @@ def train(
     batch, batch_sampler = agent.prepare_algorithm()
     if batch_sampler is not None:
         s1 = time.time()
-        for epoch in range(config.epochs):
+        for epoch in range(config.ppo_epochs):
             for idxs in batch_sampler:
                 batch = {k: v[idxs] for k, v in batch.items()}
                 loss = agent.algorithm_loss(**batch)
