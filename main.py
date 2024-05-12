@@ -252,7 +252,7 @@ if __name__ == "__main__":
         done = torch.tensor(1 - done, dtype=torch.float32)
         analytic.end_step()
         data = [state0, value, action0, probs0, state1, reward, done]
-        print("State 0: ", state0[0][:10])
+        print("State 0: ", torch.mean(state0, dim=0))
         train(
             fabric, agent, opt_algorithm, opt_motivation, data, config
         )
