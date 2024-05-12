@@ -186,16 +186,9 @@ if __name__ == "__main__":
         step_counter.update(n_env)
 
         for i, index in enumerate(env_indices):
-            # step_counter.update(int(stats['ext_reward'].step[i]))
             reward_avg.update(stats["re"].sum[i])
             max_room = np.max(info["episode_visited_rooms"])
             max_unique_room = np.max(info["max_unique_rooms"])
-
-            # print(!pip install numpy==1.23.1
-            #     'Run {0:d} step {1:d}/{2:d} training [ext. reward {3:f} int. reward (max={4:f} mean={5:f} std={6:f}) steps {7:d}  mean reward {8:f} score {9:f} feature space (max={10:f} mean={11:f} std={12:f})]'.format(
-            #         trial, step_counter.steps, step_counter.limit, stats['re'].sum[i], stats['ri'].max[i], stats['ri'].mean[i], stats['ri'].std[i],
-            #         int(stats['re'].step[i]), reward_avg.value().item(), stats['score'].sum[i], stats['feature_space'].max[i], stats['feature_space'].mean[i],
-            #         stats['feature_space'].std[i]))
             print(
                 "Run {0:d} step {1:d}/{2:d} training [ext. reward {3:f} int. reward (sum={4:f} max={5:f} mean={6:f} std={7:f}) steps {8:d}  mean reward {9:f} score {10:f} feature space (max={11:f} mean={12:f} std={13:f} rooms={14:d})]".format(
                     trial,
@@ -259,14 +252,13 @@ if __name__ == "__main__":
         done = torch.tensor(1 - done, dtype=torch.float32)
         analytic.end_step()
         data = [state0, value, action0, probs0, state1, reward, done]
+        print("State 0: ", state0[0][:10])
         train(
             fabric, agent, opt_algorithm, opt_motivation, data, config
         )
-
-        # agent.train(state0, value, action0, probs0, state1, reward, done)
-
         state0 = state1
         time_estimator.update(n_env)
+        # step_counter.update(world_size)
         # p = 0.0001  # Probability of saving the agent
         # # save model
         # if random() < p:

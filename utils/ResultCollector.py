@@ -9,7 +9,7 @@ class ResultCollector:
 
     def __new__(cls):
         if cls._instance is None:
-            print("Creating the object ResultCollector")
+            print("[INFO] Creating the object ResultCollector!")
             cls._instance = super(ResultCollector, cls).__new__(cls)
             cls._instance.collector = GenericCollector()
             cls._instance.global_step = 0
