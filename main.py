@@ -30,8 +30,6 @@ def train(
     config: argparse.Namespace,
     global_step: int = 0,
 ):
-    if global_step % config.trajectory_size == 0:
-        fabric.print(f"[INFO] Step {global_step} -> reward {reward.sum().item()}")
     batch, sampler, motivation_batch, motivation_size = agent.setup_data(*data)
     if batch is not None:
         s1 = time.time()
@@ -160,7 +158,6 @@ if __name__ == "__main__":
         int_reward = agent.motivation(state0, error_flag=True)[1].cpu().clip(0.0, 1.0)
 
         if info is not None:
-            print(f'[INFO] {info}')
             if "normalised_score" in info:
                 analytic.add(normalised_score=(1,))
                 score = torch.tensor(info["normalised_score"]).unsqueeze(-1)
@@ -193,7 +190,7 @@ if __name__ == "__main__":
             reward_avg.update(stats["re"].sum[i])
             max_room = np.max(info["episode_visited_rooms"])
             max_unique_room = np.max(info["max_unique_rooms"])
-            print(
+            fabric.print(
                 "Run {0:d} step {1:d}/{2:d} training [ext. reward {3:f} int. reward (sum={4:f} max={5:f} mean={6:f} std={7:f}) steps {8:d}  mean reward {9:f} score {10:f} feature space (max={11:f} mean={12:f} std={13:f} rooms={14:d})]".format(
                     trial,
                     step_counter.steps,

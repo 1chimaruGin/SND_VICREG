@@ -15,8 +15,8 @@ pybullet~=3.2.2
 pyclustering
 ray
 scikit-learn
-torch==1.9.0+cu111
-torchvision==0.10.0
+# torch==1.9.0+cu111
+# torchvision==0.10.0
 tqdm
 umap-learn
 seaborn~=0.11.2

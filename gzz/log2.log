@@ -1,0 +1,292 @@
+Linux
+2.2.1+cu121
+PyTorch built with:
+  - GCC 9.3
+  - C++ Version: 201703
+  - Intel(R) oneAPI Math Kernel Library Version 2022.2-Product Build 20220804 for Intel(R) 64 architecture applications
+  - Intel(R) MKL-DNN v3.3.2 (Git Hash 2dc95a2ad0841e29db8b22fbccaf3e5da7992b01)
+  - OpenMP 201511 (a.k.a. OpenMP 4.5)
+  - LAPACK is enabled (usually provided by MKL)
+  - NNPACK is enabled
+  - CPU capability usage: AVX512
+  - CUDA Runtime 12.1
+  - NVCC architecture flags: -gencode;arch=compute_50,code=sm_50;-gencode;arch=compute_60,code=sm_60;-gencode;arch=compute_70,code=sm_70;-gencode;arch=compute_75,code=sm_75;-gencode;arch=compute_80,code=sm_80;-gencode;arch=compute_86,code=sm_86;-gencode;arch=compute_90,code=sm_90
+  - CuDNN 8.9.2
+  - Magma 2.6.1
+  - Build settings: BLAS_INFO=mkl, BUILD_TYPE=Release, CUDA_VERSION=12.1, CUDNN_VERSION=8.9.2, CXX_COMPILER=/opt/rh/devtoolset-9/root/usr/bin/c++, CXX_FLAGS= -D_GLIBCXX_USE_CXX11_ABI=0 -fabi-version=11 -fvisibility-inlines-hidden -DUSE_PTHREADPOOL -DNDEBUG -DUSE_KINETO -DLIBKINETO_NOROCTRACER -DUSE_FBGEMM -DUSE_QNNPACK -DUSE_PYTORCH_QNNPACK -DUSE_XNNPACK -DSYMBOLICATE_MOBILE_DEBUG_HANDLE -O2 -fPIC -Wall -Wextra -Werror=return-type -Werror=non-virtual-dtor -Werror=bool-operation -Wnarrowing -Wno-missing-field-initializers -Wno-type-limits -Wno-array-bounds -Wno-unknown-pragmas -Wno-unused-parameter -Wno-unused-function -Wno-unused-result -Wno-strict-overflow -Wno-strict-aliasing -Wno-stringop-overflow -Wsuggest-override -Wno-psabi -Wno-error=pedantic -Wno-error=old-style-cast -Wno-missing-braces -fdiagnostics-color=always -faligned-new -Wno-unused-but-set-variable -Wno-maybe-uninitialized -fno-math-errno -fno-trapping-math -Werror=format -Wno-stringop-overflow, LAPACK_INFO=mkl, PERF_WITH_AVX=1, PERF_WITH_AVX2=1, PERF_WITH_AVX512=1, TORCH_VERSION=2.2.1, USE_CUDA=ON, USE_CUDNN=ON, USE_EXCEPTION_PTR=1, USE_GFLAGS=OFF, USE_GLOG=OFF, USE_MKL=ON, USE_MKLDNN=ON, USE_MPI=OFF, USE_NCCL=1, USE_NNPACK=ON, USE_OPENMP=ON, USE_ROCM=OFF, USE_ROCM_KERNEL_ASSERT=OFF, 
+
+ATen/Parallel:
+	at::get_num_threads() : 10
+	at::get_num_interop_threads() : 20
+OpenMP 201511 (a.k.a. OpenMP 4.5)
+	omp_get_max_threads() : 10
+Intel(R) oneAPI Math Kernel Library Version 2022.2-Product Build 20220804 for Intel(R) 64 architecture applications
+	mkl_get_max_threads() : 10
+Intel(R) MKL-DNN v3.3.2 (Git Hash 2dc95a2ad0841e29db8b22fbccaf3e5da7992b01)
+std::thread::hardware_concurrency() : 20
+Environment variables:
+	OMP_NUM_THREADS : 20
+	MKL_NUM_THREADS : [not set]
+ATen parallel backend: OpenMP
+
+Linux
+2.2.1+cu121
+PyTorch built with:
+  - GCC 9.3
+  - C++ Version: 201703
+  - Intel(R) oneAPI Math Kernel Library Version 2022.2-Product Build 20220804 for Intel(R) 64 architecture applications
+  - Intel(R) MKL-DNN v3.3.2 (Git Hash 2dc95a2ad0841e29db8b22fbccaf3e5da7992b01)
+  - OpenMP 201511 (a.k.a. OpenMP 4.5)
+  - LAPACK is enabled (usually provided by MKL)
+  - NNPACK is enabled
+  - CPU capability usage: AVX512
+  - CUDA Runtime 12.1
+  - NVCC architecture flags: -gencode;arch=compute_50,code=sm_50;-gencode;arch=compute_60,code=sm_60;-gencode;arch=compute_70,code=sm_70;-gencode;arch=compute_75,code=sm_75;-gencode;arch=compute_80,code=sm_80;-gencode;arch=compute_86,code=sm_86;-gencode;arch=compute_90,code=sm_90
+  - CuDNN 8.9.2
+  - Magma 2.6.1
+  - Build settings: BLAS_INFO=mkl, BUILD_TYPE=Release, CUDA_VERSION=12.1, CUDNN_VERSION=8.9.2, CXX_COMPILER=/opt/rh/devtoolset-9/root/usr/bin/c++, CXX_FLAGS= -D_GLIBCXX_USE_CXX11_ABI=0 -fabi-version=11 -fvisibility-inlines-hidden -DUSE_PTHREADPOOL -DNDEBUG -DUSE_KINETO -DLIBKINETO_NOROCTRACER -DUSE_FBGEMM -DUSE_QNNPACK -DUSE_PYTORCH_QNNPACK -DUSE_XNNPACK -DSYMBOLICATE_MOBILE_DEBUG_HANDLE -O2 -fPIC -Wall -Wextra -Werror=return-type -Werror=non-virtual-dtor -Werror=bool-operation -Wnarrowing -Wno-missing-field-initializers -Wno-type-limits -Wno-array-bounds -Wno-unknown-pragmas -Wno-unused-parameter -Wno-unused-function -Wno-unused-result -Wno-strict-overflow -Wno-strict-aliasing -Wno-stringop-overflow -Wsuggest-override -Wno-psabi -Wno-error=pedantic -Wno-error=old-style-cast -Wno-missing-braces -fdiagnostics-color=always -faligned-new -Wno-unused-but-set-variable -Wno-maybe-uninitialized -fno-math-errno -fno-trapping-math -Werror=format -Wno-stringop-overflow, LAPACK_INFO=mkl, PERF_WITH_AVX=1, PERF_WITH_AVX2=1, PERF_WITH_AVX512=1, TORCH_VERSION=2.2.1, USE_CUDA=ON, USE_CUDNN=ON, USE_EXCEPTION_PTR=1, USE_GFLAGS=OFF, USE_GLOG=OFF, USE_MKL=ON, USE_MKLDNN=ON, USE_MPI=OFF, USE_NCCL=1, USE_NNPACK=ON, USE_OPENMP=ON, USE_ROCM=OFF, USE_ROCM_KERNEL_ASSERT=OFF, 
+
+ATen/Parallel:
+	at::get_num_threads() : 10
+	at::get_num_interop_threads() : 20
+OpenMP 201511 (a.k.a. OpenMP 4.5)
+	omp_get_max_threads() : 10
+Intel(R) oneAPI Math Kernel Library Version 2022.2-Product Build 20220804 for Intel(R) 64 architecture applications
+	mkl_get_max_threads() : 10
+Intel(R) MKL-DNN v3.3.2 (Git Hash 2dc95a2ad0841e29db8b22fbccaf3e5da7992b01)
+std::thread::hardware_concurrency() : 20
+Environment variables:
+	OMP_NUM_THREADS : 20
+	MKL_NUM_THREADS : [not set]
+ATen parallel backend: OpenMP
+
+0. NVIDIA GeForce GTX 1080 Ti
+1. NVIDIA GeForce GTX 1080 Ti
+2. NVIDIA GeForce GTX 1080 Ti
+3. NVIDIA GeForce GTX 1080 Ti
+Initializing distributed: GLOBAL_RANK: 0, MEMBER: 1/2
+----------------------------------------------------------------------------------------------------
+distributed_backend=nccl
+All distributed processes registered. Starting with 2 processes
+----------------------------------------------------------------------------------------------------
+
+rank: 0, world_size: 2, device: cuda:0
+[rank: 0] Seed set to 42
+Creating 128 environments
+A.L.E: Arcade Learning Environment (version 0.8.1+53f58b7)
+[Powered by Stella]
+0. NVIDIA GeForce GTX 1080 Ti
+1. NVIDIA GeForce GTX 1080 Ti
+2. NVIDIA GeForce GTX 1080 Ti
+3. NVIDIA GeForce GTX 1080 Ti
+Initializing distributed: GLOBAL_RANK: 1, MEMBER: 2/2
+rank: 1, world_size: 2, device: cuda:1
+[rank: 1] Seed set to 42
+Creating 128 environments
+A.L.E: Arcade Learning Environment (version 0.8.1+53f58b7)
+[Powered by Stella]
+MultiEnvParallel
+envs_count      =  128
+threads_count   =  4
+envs_per_thread =  32
+
+
+
+Start training
+MultiEnvParallel
+envs_count      =  128
+threads_count   =  4
+envs_per_thread =  32
+
+
+
+Start training
+Creating the object ResultCollector
+Creating the object ResultCollector
+Trajectory 16384 batch size 128 epochs 4 training time 23.30s 
+
+Trajectory 16384 batch size 128 epochs 4 training time 23.75s 
+
+/usr/local/lib/python3.10/dist-packages/torch/nn/functional.py:3782: UserWarning: nn.functional.upsample is deprecated. Use nn.functional.interpolate instead.
+  warnings.warn("nn.functional.upsample is deprecated. Use nn.functional.interpolate instead.")
+/usr/local/lib/python3.10/dist-packages/torch/nn/functional.py:3782: UserWarning: nn.functional.upsample is deprecated. Use nn.functional.interpolate instead.
+  warnings.warn("nn.functional.upsample is deprecated. Use nn.functional.interpolate instead.")
+[INFO] CND training time: 5.997802972793579s
+[INFO] CND training time: 5.992644309997559s
+Run 0 step 31744/128000000 training [ext. reward 0.000000 int. reward (sum=0.052715 max=0.052631 mean=0.000212 std=0.007158) steps 248  mean reward 0.000000 score 0.000000 feature space (max=2.340108 mean=1.127887 std=1.169188 rooms=65)]
+Run 0 step 31872/128000000 training [ext. reward 0.000000 int. reward (sum=0.052716 max=0.052631 mean=0.000211 std=0.007144) steps 249  mean reward 0.000000 score 0.000000 feature space (max=2.340108 mean=1.132736 std=1.169354 rooms=65)]
+Run 0 step 32000/128000000 training [ext. reward 0.000000 int. reward (sum=0.052716 max=0.052631 mean=0.000210 std=0.007130) steps 250  mean reward 0.000000 score 0.000000 feature space (max=2.340108 mean=1.137546 std=1.169498 rooms=65)]
+Run 0 step 32000/128000000 training [ext. reward 0.000000 int. reward (sum=0.052716 max=0.052631 mean=0.000210 std=0.007130) steps 250  mean reward 0.000000 score 0.000000 feature space (max=2.340108 mean=1.137546 std=1.169498 rooms=65)]
+Run 0 step 32128/128000000 training [ext. reward 0.000000 int. reward (sum=0.052717 max=0.052631 mean=0.000209 std=0.007116) steps 251  mean reward 0.000000 score 0.000000 feature space (max=2.340108 mean=1.142318 std=1.169621 rooms=65)]
+Trajectory 16384 batch size 128 epochs 4 training time 23.03s 
+
+Trajectory 16384 batch size 128 epochs 4 training time 22.92s 
+
+[INFO] CND training time: 5.968303918838501s
+[INFO] CND training time: 5.968893766403198s
+Run 0 step 33024/128000000 training [ext. reward 2.000000 int. reward (sum=0.052873 max=0.052631 mean=0.000204 std=0.007019) steps 258  mean reward 0.020000 score 20.000000 feature space (max=5.377286 mean=1.198144 std=1.222340 rooms=65)]
+Run 0 step 34176/128000000 training [ext. reward 1.000000 int. reward (sum=0.053559 max=0.052631 mean=0.000200 std=0.006900) steps 267  mean reward 0.030000 score 10.000000 feature space (max=5.377286 mean=1.338489 std=1.418013 rooms=65)]
+Run 0 step 37504/128000000 training [ext. reward 2.000000 int. reward (sum=0.055540 max=0.052631 mean=0.000189 std=0.006588) steps 293  mean reward 0.050000 score 20.000000 feature space (max=5.377286 mean=1.695661 std=1.774236 rooms=65)]
+Run 0 step 37760/128000000 training [ext. reward 1.000000 int. reward (sum=0.055692 max=0.052631 mean=0.000188 std=0.006566) steps 295  mean reward 0.060000 score 10.000000 feature space (max=5.377286 mean=1.720537 std=1.793770 rooms=65)]
+Run 0 step 37888/128000000 training [ext. reward 2.000000 int. reward (sum=0.055768 max=0.052631 mean=0.000188 std=0.006555) steps 296  mean reward 0.080000 score 20.000000 feature space (max=5.377286 mean=1.732849 std=1.803233 rooms=65)]
+Run 0 step 38016/128000000 training [ext. reward 3.000000 int. reward (sum=0.055844 max=0.052631 mean=0.000187 std=0.006544) steps 297  mean reward 0.110000 score 30.000000 feature space (max=5.377286 mean=1.745079 std=1.812500 rooms=65)]
+Run 0 step 39040/128000000 training [ext. reward 8.000000 int. reward (sum=0.056454 max=0.052631 mean=0.000184 std=0.006458) steps 305  mean reward 0.190000 score 80.000000 feature space (max=5.377286 mean=1.840039 std=1.880204 rooms=65)]
+Run 0 step 39296/128000000 training [ext. reward 3.000000 int. reward (sum=0.056606 max=0.052631 mean=0.000184 std=0.006437) steps 307  mean reward 0.220000 score 30.000000 feature space (max=5.377286 mean=1.863008 std=1.895503 rooms=65)]
+Run 0 step 39552/128000000 training [ext. reward 5.000000 int. reward (sum=0.056759 max=0.052631 mean=0.000183 std=0.006416) steps 309  mean reward 0.270000 score 50.000000 feature space (max=5.377286 mean=1.885681 std=1.910213 rooms=65)]
+Run 0 step 39808/128000000 training [ext. reward 4.000000 int. reward (sum=0.056911 max=0.052631 mean=0.000182 std=0.006395) steps 311  mean reward 0.310000 score 40.000000 feature space (max=5.377286 mean=1.908063 std=1.924363 rooms=65)]
+Run 0 step 39808/128000000 training [ext. reward 3.000000 int. reward (sum=0.056911 max=0.052631 mean=0.000182 std=0.006395) steps 311  mean reward 0.340000 score 30.000000 feature space (max=5.377286 mean=1.908063 std=1.924363 rooms=65)]
+Run 0 step 40832/128000000 training [ext. reward 3.000000 int. reward (sum=0.057521 max=0.052631 mean=0.000180 std=0.006315) steps 319  mean reward 0.370000 score 30.000000 feature space (max=5.377286 mean=1.994793 std=1.975844 rooms=65)]
+Run 0 step 41472/128000000 training [ext. reward 4.000000 int. reward (sum=0.057902 max=0.052631 mean=0.000178 std=0.006266) steps 324  mean reward 0.410000 score 40.000000 feature space (max=5.377286 mean=2.046831 std=2.004298 rooms=65)]
+Run 0 step 42240/128000000 training [ext. reward 6.000000 int. reward (sum=0.058359 max=0.052631 mean=0.000176 std=0.006209) steps 330  mean reward 0.470000 score 60.000000 feature space (max=5.377286 mean=2.107202 std=2.035143 rooms=65)]
+Run 0 step 42240/128000000 training [ext. reward 4.000000 int. reward (sum=0.058359 max=0.052631 mean=0.000176 std=0.006209) steps 330  mean reward 0.510000 score 40.000000 feature space (max=5.377286 mean=2.107202 std=2.035143 rooms=65)]
+Run 0 step 42624/128000000 training [ext. reward 5.000000 int. reward (sum=0.058587 max=0.052631 mean=0.000175 std=0.006181) steps 333  mean reward 0.560000 score 50.000000 feature space (max=5.377286 mean=2.136574 std=2.049339 rooms=65)]
+Run 0 step 42624/128000000 training [ext. reward 5.000000 int. reward (sum=0.058587 max=0.052631 mean=0.000175 std=0.006181) steps 333  mean reward 0.610000 score 50.000000 feature space (max=5.377286 mean=2.136574 std=2.049339 rooms=65)]
+Run 0 step 42880/128000000 training [ext. reward 2.000000 int. reward (sum=0.058740 max=0.052631 mean=0.000175 std=0.006163) steps 335  mean reward 0.630000 score 20.000000 feature space (max=5.377286 mean=2.155864 std=2.058381 rooms=65)]
+Run 0 step 43520/128000000 training [ext. reward 6.000000 int. reward (sum=0.059121 max=0.052631 mean=0.000173 std=0.006117) steps 340  mean reward 0.690000 score 60.000000 feature space (max=5.377286 mean=2.203099 std=2.079601 rooms=65)]
+Run 0 step 43776/128000000 training [ext. reward 4.000000 int. reward (sum=0.059273 max=0.052631 mean=0.000173 std=0.006099) steps 342  mean reward 0.730000 score 40.000000 feature space (max=5.377286 mean=2.221607 std=2.087565 rooms=65)]
+Run 0 step 44032/128000000 training [ext. reward 3.000000 int. reward (sum=0.059425 max=0.052631 mean=0.000172 std=0.006082) steps 344  mean reward 0.760000 score 30.000000 feature space (max=5.377286 mean=2.239900 std=2.095247 rooms=65)]
+Run 0 step 44032/128000000 training [ext. reward 6.000000 int. reward (sum=0.059425 max=0.052631 mean=0.000172 std=0.006082) steps 344  mean reward 0.820000 score 60.000000 feature space (max=5.377286 mean=2.239900 std=2.095247 rooms=65)]
+Run 0 step 44544/128000000 training [ext. reward 7.000000 int. reward (sum=0.059730 max=0.052631 mean=0.000171 std=0.006047) steps 348  mean reward 0.890000 score 70.000000 feature space (max=5.377286 mean=2.275859 std=2.109803 rooms=65)]
+Run 0 step 44544/128000000 training [ext. reward 5.000000 int. reward (sum=0.059730 max=0.052631 mean=0.000171 std=0.006047) steps 348  mean reward 0.940000 score 50.000000 feature space (max=5.377286 mean=2.275859 std=2.109803 rooms=65)]
+Run 0 step 44672/128000000 training [ext. reward 7.000000 int. reward (sum=0.059806 max=0.052631 mean=0.000171 std=0.006038) steps 349  mean reward 1.010000 score 70.000000 feature space (max=5.377286 mean=2.284720 std=2.113281 rooms=65)]
+Run 0 step 44672/128000000 training [ext. reward 5.000000 int. reward (sum=0.059806 max=0.052631 mean=0.000171 std=0.006038) steps 349  mean reward 1.060000 score 50.000000 feature space (max=5.377286 mean=2.284720 std=2.113281 rooms=65)]
+Run 0 step 44672/128000000 training [ext. reward 4.000000 int. reward (sum=0.059806 max=0.052631 mean=0.000171 std=0.006038) steps 349  mean reward 1.100000 score 40.000000 feature space (max=5.377286 mean=2.284720 std=2.113281 rooms=65)]
+Run 0 step 45056/128000000 training [ext. reward 4.000000 int. reward (sum=0.060035 max=0.052631 mean=0.000170 std=0.006012) steps 352  mean reward 1.140000 score 40.000000 feature space (max=5.377286 mean=2.311003 std=2.123344 rooms=65)]
+Run 0 step 45184/128000000 training [ext. reward 6.000000 int. reward (sum=0.060111 max=0.052631 mean=0.000170 std=0.006004) steps 353  mean reward 1.200000 score 60.000000 feature space (max=5.377286 mean=2.319664 std=2.126579 rooms=65)]
+Run 0 step 45696/128000000 training [ext. reward 5.000000 int. reward (sum=0.060416 max=0.052631 mean=0.000169 std=0.005970) steps 357  mean reward 1.250000 score 50.000000 feature space (max=5.377286 mean=2.353828 std=2.138948 rooms=65)]
+Run 0 step 45696/128000000 training [ext. reward 6.000000 int. reward (sum=0.060416 max=0.052631 mean=0.000169 std=0.005970) steps 357  mean reward 1.310000 score 60.000000 feature space (max=5.377286 mean=2.353828 std=2.138948 rooms=65)]
+Run 0 step 46080/128000000 training [ext. reward 9.000000 int. reward (sum=0.060644 max=0.052631 mean=0.000168 std=0.005945) steps 360  mean reward 1.400000 score 90.000000 feature space (max=5.377286 mean=2.378954 std=2.147654 rooms=65)]
+Run 0 step 46208/128000000 training [ext. reward 3.000000 int. reward (sum=0.060721 max=0.052631 mean=0.000168 std=0.005937) steps 361  mean reward 1.430000 score 30.000000 feature space (max=5.377286 mean=2.387236 std=2.150451 rooms=65)]
+Run 0 step 46336/128000000 training [ext. reward 5.000000 int. reward (sum=0.060797 max=0.052631 mean=0.000167 std=0.005929) steps 362  mean reward 1.480000 score 50.000000 feature space (max=5.377286 mean=2.395473 std=2.153198 rooms=65)]
+Run 0 step 46464/128000000 training [ext. reward 3.000000 int. reward (sum=0.060873 max=0.052631 mean=0.000167 std=0.005921) steps 363  mean reward 1.510000 score 30.000000 feature space (max=5.377286 mean=2.403665 std=2.155895 rooms=65)]
+Run 0 step 46592/128000000 training [ext. reward 3.000000 int. reward (sum=0.060949 max=0.052631 mean=0.000167 std=0.005913) steps 364  mean reward 1.540000 score 30.000000 feature space (max=5.377286 mean=2.411812 std=2.158543 rooms=65)]
+Run 0 step 47104/128000000 training [ext. reward 5.000000 int. reward (sum=0.061254 max=0.052631 mean=0.000166 std=0.005881) steps 368  mean reward 1.590000 score 50.000000 feature space (max=5.377286 mean=2.443959 std=2.168663 rooms=64)]
+Run 0 step 47488/128000000 training [ext. reward 10.000000 int. reward (sum=0.061482 max=0.052631 mean=0.000165 std=0.005857) steps 371  mean reward 1.690000 score 100.000000 feature space (max=5.377286 mean=2.467614 std=2.175776 rooms=65)]
+Run 0 step 47616/128000000 training [ext. reward 13.000000 int. reward (sum=0.061559 max=0.052631 mean=0.000165 std=0.005849) steps 372  mean reward 1.820000 score 130.000000 feature space (max=5.377286 mean=2.475415 std=2.178060 rooms=65)]
+Run 0 step 47744/128000000 training [ext. reward 3.000000 int. reward (sum=9.094612 max=0.494127 mean=0.024317 std=0.079698) steps 373  mean reward 1.850000 score 30.000000 feature space (max=26.814245 mean=3.318841 std=4.205043 rooms=65)]
+Run 0 step 48128/128000000 training [ext. reward 6.000000 int. reward (sum=0.061863 max=0.052631 mean=0.000164 std=0.005818) steps 376  mean reward 1.910000 score 60.000000 feature space (max=5.377286 mean=2.506204 std=2.186780 rooms=65)]
+Run 0 step 48256/128000000 training [ext. reward 8.000000 int. reward (sum=0.061940 max=0.052631 mean=0.000164 std=0.005810) steps 377  mean reward 1.990000 score 80.000000 feature space (max=5.377286 mean=2.513800 std=2.188860 rooms=65)]
+Run 0 step 48256/128000000 training [ext. reward 3.000000 int. reward (sum=0.061940 max=0.052631 mean=0.000164 std=0.005810) steps 377  mean reward 2.020000 score 30.000000 feature space (max=5.377286 mean=2.513800 std=2.188860 rooms=65)]
+Run 0 step 48384/128000000 training [ext. reward 5.000000 int. reward (sum=0.062016 max=0.052631 mean=0.000164 std=0.005803) steps 378  mean reward 2.070000 score 50.000000 feature space (max=5.377286 mean=2.521355 std=2.190900 rooms=65)]
+Run 0 step 48896/128000000 training [ext. reward 5.000000 int. reward (sum=0.062321 max=0.052631 mean=0.000163 std=0.005772) steps 382  mean reward 2.120000 score 50.000000 feature space (max=5.377286 mean=2.551182 std=2.198683 rooms=65)]
+Run 0 step 49024/128000000 training [ext. reward 6.000000 int. reward (sum=0.062397 max=0.052631 mean=0.000162 std=0.005765) steps 383  mean reward 2.180000 score 60.000000 feature space (max=5.377286 mean=2.558542 std=2.200537 rooms=65)]
+Run 0 step 49024/128000000 training [ext. reward 7.000000 int. reward (sum=0.062397 max=0.052631 mean=0.000162 std=0.005765) steps 383  mean reward 2.250000 score 70.000000 feature space (max=5.377286 mean=2.558542 std=2.200537 rooms=65)]
+Run 0 step 49024/128000000 training [ext. reward 10.000000 int. reward (sum=0.062397 max=0.052631 mean=0.000162 std=0.005765) steps 383  mean reward 2.350000 score 100.000000 feature space (max=5.377286 mean=2.558542 std=2.200537 rooms=65)]
+Run 0 step 49152/128000000 training [ext. reward 4.000000 int. reward (sum=0.062473 max=0.052631 mean=0.000162 std=0.005757) steps 384  mean reward 2.390000 score 40.000000 feature space (max=5.377286 mean=2.565863 std=2.202355 rooms=65)]
+Trajectory 16384 batch size 128 epochs 4 training time 24.96s 
+
+Trajectory 16384 batch size 128 epochs 4 training time 25.57s 
+
+[INFO] CND training time: 6.013017892837524s
+[INFO] CND training time: 6.005399465560913s
+Run 0 step 49792/128000000 training [ext. reward 7.000000 int. reward (sum=0.062661 max=0.052631 mean=0.000161 std=0.005720) steps 389  mean reward 2.460000 score 70.000000 feature space (max=9.624315 mean=2.656356 std=2.327818 rooms=65)]
+Run 0 step 49792/128000000 training [ext. reward 6.000000 int. reward (sum=0.062661 max=0.052631 mean=0.000161 std=0.005720) steps 389  mean reward 2.520000 score 60.000000 feature space (max=9.624315 mean=2.656356 std=2.327818 rooms=65)]
+Run 0 step 49920/128000000 training [ext. reward 8.000000 int. reward (sum=0.062698 max=0.052631 mean=0.000160 std=0.005713) steps 390  mean reward 2.600000 score 80.000000 feature space (max=9.624315 mean=2.674177 std=2.351326 rooms=65)]
+Run 0 step 50304/128000000 training [ext. reward 9.000000 int. reward (sum=0.062811 max=0.052631 mean=0.000159 std=0.005691) steps 393  mean reward 2.690000 score 90.000000 feature space (max=9.624315 mean=2.727097 std=2.419016 rooms=65)]
+Run 0 step 50304/128000000 training [ext. reward 9.000000 int. reward (sum=0.062811 max=0.052631 mean=0.000159 std=0.005691) steps 393  mean reward 2.780000 score 90.000000 feature space (max=9.624315 mean=2.727097 std=2.419016 rooms=65)]
+Run 0 step 50432/128000000 training [ext. reward 8.000000 int. reward (sum=0.062849 max=0.052631 mean=0.000159 std=0.005684) steps 394  mean reward 2.860000 score 80.000000 feature space (max=9.624315 mean=2.744558 std=2.440687 rooms=65)]
+Run 0 step 50432/128000000 training [ext. reward 11.000000 int. reward (sum=0.062849 max=0.052631 mean=0.000159 std=0.005684) steps 394  mean reward 2.970000 score 110.000000 feature space (max=9.624315 mean=2.744558 std=2.440687 rooms=65)]
+Run 0 step 50560/128000000 training [ext. reward 10.000000 int. reward (sum=0.062886 max=0.052631 mean=0.000159 std=0.005677) steps 395  mean reward 3.070000 score 100.000000 feature space (max=9.624315 mean=2.761931 std=2.461936 rooms=65)]
+Run 0 step 50688/128000000 training [ext. reward 8.000000 int. reward (sum=0.062924 max=0.052631 mean=0.000158 std=0.005670) steps 396  mean reward 3.150000 score 80.000000 feature space (max=9.624315 mean=2.779217 std=2.482778 rooms=65)]
+Run 0 step 51328/128000000 training [ext. reward 9.000000 int. reward (sum=0.063112 max=0.052631 mean=0.000157 std=0.005634) steps 401  mean reward 3.240000 score 90.000000 feature space (max=9.624315 mean=2.864355 std=2.581288 rooms=65)]
+Run 0 step 51328/128000000 training [ext. reward 7.000000 int. reward (sum=0.063112 max=0.052631 mean=0.000157 std=0.005634) steps 401  mean reward 3.310000 score 70.000000 feature space (max=9.624315 mean=2.864355 std=2.581288 rooms=65)]
+Run 0 step 51328/128000000 training [ext. reward 9.000000 int. reward (sum=0.063112 max=0.052631 mean=0.000157 std=0.005634) steps 401  mean reward 3.400000 score 90.000000 feature space (max=9.624315 mean=2.864355 std=2.581288 rooms=65)]
+Run 0 step 51840/128000000 training [ext. reward 3.000000 int. reward (sum=0.063262 max=0.052631 mean=0.000156 std=0.005606) steps 405  mean reward 3.430000 score 30.000000 feature space (max=9.624315 mean=2.930956 std=2.653899 rooms=65)]
+Run 0 step 51840/128000000 training [ext. reward 12.000000 int. reward (sum=0.063262 max=0.052631 mean=0.000156 std=0.005606) steps 405  mean reward 3.550000 score 120.000000 feature space (max=9.624315 mean=2.930956 std=2.653899 rooms=65)]
+Run 0 step 51968/128000000 training [ext. reward 9.000000 int. reward (sum=0.063299 max=0.052631 mean=0.000156 std=0.005600) steps 406  mean reward 3.640000 score 90.000000 feature space (max=9.624315 mean=2.947401 std=2.671270 rooms=65)]
+Run 0 step 51968/128000000 training [ext. reward 4.000000 int. reward (sum=0.063299 max=0.052631 mean=0.000156 std=0.005600) steps 406  mean reward 3.680000 score 40.000000 feature space (max=9.624315 mean=2.947401 std=2.671270 rooms=65)]
+Run 0 step 52224/128000000 training [ext. reward 6.000000 int. reward (sum=0.063374 max=0.052631 mean=0.000155 std=0.005586) steps 408  mean reward 3.740000 score 60.000000 feature space (max=9.624315 mean=2.980051 std=2.705129 rooms=65)]
+Run 0 step 52224/128000000 training [ext. reward 7.000000 int. reward (sum=0.063374 max=0.052631 mean=0.000155 std=0.005586) steps 408  mean reward 3.810000 score 70.000000 feature space (max=9.624315 mean=2.980051 std=2.705129 rooms=65)]
+Run 0 step 52352/128000000 training [ext. reward 5.000000 int. reward (sum=0.063412 max=0.052631 mean=0.000155 std=0.005579) steps 409  mean reward 3.860000 score 50.000000 feature space (max=9.624315 mean=2.996257 std=2.721633 rooms=65)]
+Run 0 step 52480/128000000 training [ext. reward 10.000000 int. reward (sum=0.063450 max=0.052631 mean=0.000154 std=0.005572) steps 410  mean reward 3.960000 score 100.000000 feature space (max=9.624315 mean=3.012383 std=2.737863 rooms=65)]
+Run 0 step 52736/128000000 training [ext. reward 9.000000 int. reward (sum=0.063525 max=0.052631 mean=0.000154 std=0.005559) steps 412  mean reward 4.050000 score 90.000000 feature space (max=9.624315 mean=3.044403 std=2.769526 rooms=65)]
+Run 0 step 52736/128000000 training [ext. reward 10.000000 int. reward (sum=0.063525 max=0.052631 mean=0.000154 std=0.005559) steps 412  mean reward 4.150000 score 100.000000 feature space (max=9.624315 mean=3.044403 std=2.769526 rooms=65)]
+Run 0 step 52736/128000000 training [ext. reward 11.000000 int. reward (sum=0.063525 max=0.052631 mean=0.000154 std=0.005559) steps 412  mean reward 4.260000 score 110.000000 feature space (max=9.624315 mean=3.044403 std=2.769526 rooms=65)]
+Run 0 step 52864/128000000 training [ext. reward 9.000000 int. reward (sum=0.063562 max=0.052631 mean=0.000154 std=0.005552) steps 413  mean reward 4.350000 score 90.000000 feature space (max=9.624315 mean=3.060296 std=2.784973 rooms=65)]
+Run 0 step 52992/128000000 training [ext. reward 9.000000 int. reward (sum=2.819385 max=0.494127 mean=0.006794 std=0.041366) steps 414  mean reward 4.440000 score 90.000000 feature space (max=26.814245 mean=3.507926 std=4.028703 rooms=65)]
+Run 0 step 53120/128000000 training [ext. reward 10.000000 int. reward (sum=0.063637 max=0.052631 mean=0.000153 std=0.005539) steps 415  mean reward 4.540000 score 100.000000 feature space (max=9.624315 mean=3.091854 std=2.815126 rooms=65)]
+Run 0 step 53120/128000000 training [ext. reward 11.000000 int. reward (sum=0.063637 max=0.052631 mean=0.000153 std=0.005539) steps 415  mean reward 4.650000 score 110.000000 feature space (max=9.624315 mean=3.091854 std=2.815126 rooms=65)]
+Run 0 step 53120/128000000 training [ext. reward 14.000000 int. reward (sum=0.063637 max=0.052631 mean=0.000153 std=0.005539) steps 415  mean reward 4.790000 score 140.000000 feature space (max=9.624315 mean=3.091854 std=2.815126 rooms=65)]
+Run 0 step 53376/128000000 training [ext. reward 4.000000 int. reward (sum=0.063713 max=0.052631 mean=0.000152 std=0.005525) steps 417  mean reward 4.830000 score 40.000000 feature space (max=9.624315 mean=3.123110 std=2.844331 rooms=65)]
+Run 0 step 53632/128000000 training [ext. reward 8.000000 int. reward (sum=0.063788 max=0.052631 mean=0.000152 std=0.005512) steps 419  mean reward 4.910000 score 80.000000 feature space (max=9.624315 mean=3.154068 std=2.872629 rooms=65)]
+Run 0 step 54016/128000000 training [ext. reward 9.000000 int. reward (sum=0.063900 max=0.052631 mean=0.000151 std=0.005493) steps 422  mean reward 5.000000 score 90.000000 feature space (max=9.624315 mean=3.199956 std=2.913465 rooms=65)]
+Run 0 step 54144/128000000 training [ext. reward 14.000000 int. reward (sum=0.063938 max=0.052631 mean=0.000151 std=0.005486) steps 423  mean reward 5.140000 score 140.000000 feature space (max=9.624315 mean=3.215108 std=2.926665 rooms=65)]
+Run 0 step 54272/128000000 training [ext. reward 11.000000 int. reward (sum=0.063976 max=0.052631 mean=0.000151 std=0.005480) steps 424  mean reward 5.250000 score 110.000000 feature space (max=9.624315 mean=3.230188 std=2.939667 rooms=64)]
+Run 0 step 54784/128000000 training [ext. reward 7.000000 int. reward (sum=0.064126 max=0.052631 mean=0.000149 std=0.005454) steps 428  mean reward 5.320000 score 70.000000 feature space (max=9.624315 mean=3.289807 std=2.989769 rooms=65)]
+Run 0 step 55168/128000000 training [ext. reward 6.000000 int. reward (sum=0.064239 max=0.052631 mean=0.000149 std=0.005435) steps 431  mean reward 5.380000 score 60.000000 feature space (max=9.624315 mean=3.333797 std=3.025453 rooms=65)]
+Run 0 step 55424/128000000 training [ext. reward 10.000000 int. reward (sum=0.064314 max=0.052631 mean=0.000148 std=0.005423) steps 433  mean reward 5.480000 score 100.000000 feature space (max=9.624315 mean=3.362785 std=3.048392 rooms=65)]
+Run 0 step 55680/128000000 training [ext. reward 6.000000 int. reward (sum=0.064389 max=0.052631 mean=0.000148 std=0.005410) steps 435  mean reward 5.540000 score 60.000000 feature space (max=9.624315 mean=3.391508 std=3.070683 rooms=65)]
+Run 0 step 56192/128000000 training [ext. reward 11.000000 int. reward (sum=0.064539 max=0.052631 mean=0.000147 std=0.005386) steps 439  mean reward 5.650000 score 110.000000 feature space (max=9.624315 mean=3.448170 std=3.113410 rooms=65)]
+Run 0 step 56320/128000000 training [ext. reward 8.000000 int. reward (sum=0.064577 max=0.052631 mean=0.000146 std=0.005379) steps 440  mean reward 5.730000 score 80.000000 feature space (max=9.624315 mean=3.462175 std=3.123723 rooms=65)]
+Run 0 step 56448/128000000 training [ext. reward 5.000000 int. reward (sum=0.064614 max=0.052631 mean=0.000146 std=0.005373) steps 441  mean reward 5.780000 score 50.000000 feature space (max=9.624315 mean=3.476116 std=3.133893 rooms=65)]
+Run 0 step 56576/128000000 training [ext. reward 8.000000 int. reward (sum=0.064652 max=0.052631 mean=0.000146 std=0.005367) steps 442  mean reward 5.860000 score 80.000000 feature space (max=9.624315 mean=3.489995 std=3.143922 rooms=64)]
+Run 0 step 56704/128000000 training [ext. reward 9.000000 int. reward (sum=0.064689 max=0.052631 mean=0.000146 std=0.005361) steps 443  mean reward 5.950000 score 90.000000 feature space (max=9.624315 mean=3.503811 std=3.153815 rooms=65)]
+Run 0 step 56960/128000000 training [ext. reward 15.000000 int. reward (sum=0.064764 max=0.052631 mean=0.000145 std=0.005349) steps 445  mean reward 6.100000 score 150.000000 feature space (max=9.624315 mean=3.531257 std=3.173196 rooms=65)]
+Run 0 step 57600/128000000 training [ext. reward 13.000000 int. reward (sum=0.064952 max=0.052631 mean=0.000144 std=0.005319) steps 450  mean reward 6.230000 score 130.000000 feature space (max=9.624315 mean=3.598808 std=3.219405 rooms=65)]
+Run 0 step 57600/128000000 training [ext. reward 10.000000 int. reward (sum=0.064952 max=0.052631 mean=0.000144 std=0.005319) steps 450  mean reward 6.330000 score 100.000000 feature space (max=9.624315 mean=3.598808 std=3.219405 rooms=65)]
+Run 0 step 57728/128000000 training [ext. reward 4.000000 int. reward (sum=0.064990 max=0.052631 mean=0.000144 std=0.005314) steps 451  mean reward 6.370000 score 40.000000 feature space (max=9.624315 mean=3.612139 std=3.228279 rooms=65)]
+Run 0 step 57984/128000000 training [ext. reward 14.000000 int. reward (sum=0.065065 max=0.052631 mean=0.000143 std=0.005302) steps 453  mean reward 6.510000 score 140.000000 feature space (max=9.624315 mean=3.638624 std=3.245675 rooms=65)]
+Run 0 step 58624/128000000 training [ext. reward 7.000000 int. reward (sum=0.065253 max=0.052631 mean=0.000142 std=0.005273) steps 458  mean reward 6.580000 score 70.000000 feature space (max=9.624315 mean=3.703827 std=3.287201 rooms=65)]
+Run 0 step 59392/128000000 training [ext. reward 7.000000 int. reward (sum=0.065478 max=0.052631 mean=0.000141 std=0.005239) steps 464  mean reward 6.650000 score 70.000000 feature space (max=9.624315 mean=3.780221 std=3.333574 rooms=65)]
+Run 0 step 59776/128000000 training [ext. reward 12.000000 int. reward (sum=0.065591 max=0.052631 mean=0.000140 std=0.005222) steps 467  mean reward 6.770000 score 120.000000 feature space (max=9.624315 mean=3.817683 std=3.355444 rooms=65)]
+Run 0 step 59904/128000000 training [ext. reward 11.000000 int. reward (sum=0.065628 max=0.052631 mean=0.000140 std=0.005216) steps 468  mean reward 6.880000 score 110.000000 feature space (max=9.624315 mean=3.830064 std=3.362550 rooms=65)]
+Run 0 step 59904/128000000 training [ext. reward 7.000000 int. reward (sum=0.065628 max=0.052631 mean=0.000140 std=0.005216) steps 468  mean reward 6.930000 score 70.000000 feature space (max=9.624315 mean=3.830064 std=3.362550 rooms=65)]
+Run 0 step 60032/128000000 training [ext. reward 11.000000 int. reward (sum=0.065666 max=0.052631 mean=0.000140 std=0.005211) steps 469  mean reward 7.030000 score 110.000000 feature space (max=9.624315 mean=3.842392 std=3.369564 rooms=65)]
+Run 0 step 60032/128000000 training [ext. reward 13.000000 int. reward (sum=0.065666 max=0.052631 mean=0.000140 std=0.005211) steps 469  mean reward 7.140000 score 130.000000 feature space (max=9.624315 mean=3.842392 std=3.369564 rooms=65)]
+Run 0 step 60160/128000000 training [ext. reward 17.000000 int. reward (sum=0.065704 max=0.052631 mean=0.000139 std=0.005205) steps 470  mean reward 7.300000 score 170.000000 feature space (max=9.624315 mean=3.854668 std=3.376490 rooms=65)]
+Run 0 step 60416/128000000 training [ext. reward 14.000000 int. reward (sum=0.065779 max=0.052631 mean=0.000139 std=0.005194) steps 472  mean reward 7.420000 score 140.000000 feature space (max=9.624315 mean=3.879064 std=3.390079 rooms=65)]
+Run 0 step 60672/128000000 training [ext. reward 14.000000 int. reward (sum=0.065854 max=0.052631 mean=0.000139 std=0.005183) steps 474  mean reward 7.530000 score 140.000000 feature space (max=9.624315 mean=3.903254 std=3.403329 rooms=65)]
+Run 0 step 61440/128000000 training [ext. reward 11.000000 int. reward (sum=0.066079 max=0.052631 mean=0.000137 std=0.005151) steps 480  mean reward 7.560000 score 110.000000 feature space (max=9.624315 mean=3.974618 std=3.441126 rooms=65)]
+Run 0 step 61696/128000000 training [ext. reward 7.000000 int. reward (sum=0.066154 max=0.052631 mean=0.000137 std=0.005140) steps 482  mean reward 7.600000 score 70.000000 feature space (max=9.624315 mean=3.998013 std=3.453106 rooms=65)]
+Run 0 step 61824/128000000 training [ext. reward 12.000000 int. reward (sum=0.066192 max=0.052631 mean=0.000137 std=0.005135) steps 483  mean reward 7.670000 score 120.000000 feature space (max=9.624315 mean=4.009637 std=3.458984 rooms=65)]
+Run 0 step 62080/128000000 training [ext. reward 8.000000 int. reward (sum=0.066267 max=0.052631 mean=0.000136 std=0.005124) steps 485  mean reward 7.710000 score 80.000000 feature space (max=9.624315 mean=4.032743 std=3.470523 rooms=65)]
+Run 0 step 62336/128000000 training [ext. reward 7.000000 int. reward (sum=0.066342 max=0.052631 mean=0.000136 std=0.005114) steps 487  mean reward 7.750000 score 70.000000 feature space (max=9.624315 mean=4.055659 std=3.481779 rooms=65)]
+Run 0 step 62592/128000000 training [ext. reward 8.000000 int. reward (sum=0.066417 max=0.052631 mean=0.000136 std=0.005104) steps 489  mean reward 7.800000 score 80.000000 feature space (max=9.624315 mean=4.078389 std=3.492758 rooms=65)]
+Run 0 step 62720/128000000 training [ext. reward 7.000000 int. reward (sum=0.066455 max=0.052631 mean=0.000135 std=0.005098) steps 490  mean reward 7.830000 score 70.000000 feature space (max=9.624315 mean=4.089684 std=3.498146 rooms=65)]
+Run 0 step 64000/128000000 training [ext. reward 16.000000 int. reward (sum=0.066831 max=0.052631 mean=0.000133 std=0.005047) steps 500  mean reward 7.930000 score 160.000000 feature space (max=9.624315 mean=4.200156 std=3.548519 rooms=65)]
+Run 0 step 64640/128000000 training [ext. reward 10.000000 int. reward (sum=0.067018 max=0.052631 mean=0.000132 std=0.005022) steps 505  mean reward 7.990000 score 100.000000 feature space (max=9.624315 mean=4.253755 std=3.571472 rooms=65)]
+Run 0 step 64768/128000000 training [ext. reward 12.000000 int. reward (sum=0.067056 max=0.052631 mean=0.000132 std=0.005017) steps 506  mean reward 8.060000 score 120.000000 feature space (max=9.624315 mean=4.264348 std=3.575896 rooms=65)]
+Run 0 step 64768/128000000 training [ext. reward 14.000000 int. reward (sum=0.067056 max=0.052631 mean=0.000132 std=0.005017) steps 506  mean reward 8.150000 score 140.000000 feature space (max=9.624315 mean=4.264348 std=3.575896 rooms=65)]
+[2024-05-16 23:49:12,801] torch.distributed.elastic.agent.server.api: [WARNING] Received Signals.SIGTERM death signal, shutting down workers
+[2024-05-16 23:49:12,801] torch.distributed.elastic.multiprocessing.api: [WARNING] Sending process 60011 closing signal SIGTERM
+[2024-05-16 23:49:12,802] torch.distributed.elastic.multiprocessing.api: [WARNING] Sending process 60012 closing signal SIGTERM
+Traceback (most recent call last):
+  File "/usr/local/bin/fabric", line 8, in <module>
+    sys.exit(_main())
+  File "/usr/local/lib/python3.10/dist-packages/click/core.py", line 1157, in __call__
+    return self.main(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/click/core.py", line 1078, in main
+    rv = self.invoke(ctx)
+  File "/usr/local/lib/python3.10/dist-packages/click/core.py", line 1688, in invoke
+    return _process_result(sub_ctx.command.invoke(sub_ctx))
+  File "/usr/local/lib/python3.10/dist-packages/click/core.py", line 1688, in invoke
+    return _process_result(sub_ctx.command.invoke(sub_ctx))
+  File "/usr/local/lib/python3.10/dist-packages/click/core.py", line 1434, in invoke
+    return ctx.invoke(self.callback, **ctx.params)
+  File "/usr/local/lib/python3.10/dist-packages/click/core.py", line 783, in invoke
+    return __callback(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/lightning/fabric/cli.py", line 159, in _run_model
+    main(args=Namespace(**kwargs), script_args=script_args)
+  File "/usr/local/lib/python3.10/dist-packages/lightning/fabric/cli.py", line 217, in main
+    _torchrun_launch(args, script_args or [])
+  File "/usr/local/lib/python3.10/dist-packages/lightning/fabric/cli.py", line 212, in _torchrun_launch
+    torchrun.main(torchrun_args)
+  File "/usr/local/lib/python3.10/dist-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 347, in wrapper
+    return f(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/distributed/run.py", line 812, in main
+    run(args)
+  File "/usr/local/lib/python3.10/dist-packages/torch/distributed/run.py", line 803, in run
+    elastic_launch(
+  File "/usr/local/lib/python3.10/dist-packages/torch/distributed/launcher/api.py", line 135, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+  File "/usr/local/lib/python3.10/dist-packages/torch/distributed/launcher/api.py", line 259, in launch_agent
+    result = agent.run()
+  File "/usr/local/lib/python3.10/dist-packages/torch/distributed/elastic/metrics/api.py", line 123, in wrapper
+    result = f(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/distributed/elastic/agent/server/api.py", line 727, in run
+    result = self._invoke_run(role)
+  File "/usr/local/lib/python3.10/dist-packages/torch/distributed/elastic/agent/server/api.py", line 868, in _invoke_run
+    time.sleep(monitor_interval)
+  File "/usr/local/lib/python3.10/dist-packages/torch/distributed/elastic/multiprocessing/api.py", line 62, in _terminate_process_handler
+    raise SignalException(f"Process {os.getpid()} got signal: {sigval}", sigval=sigval)
+torch.distributed.elastic.multiprocessing.api.SignalException: Process 59990 got signal: 15

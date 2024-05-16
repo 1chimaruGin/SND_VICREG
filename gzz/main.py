@@ -164,7 +164,7 @@ if __name__ == "__main__":
             #         trial, step_counter.steps, step_counter.limit, stats['re'].sum[i], stats['ri'].max[i], stats['ri'].mean[i], stats['ri'].std[i],
             #         int(stats['re'].step[i]), reward_avg.value().item(), stats['score'].sum[i], stats['feature_space'].max[i], stats['feature_space'].mean[i],
             #         stats['feature_space'].std[i]))
-            print(
+            fabric.print(
                 "Run {0:d} step {1:d}/{2:d} training [ext. reward {3:f} int. reward (sum={4:f} max={5:f} mean={6:f} std={7:f}) steps {8:d}  mean reward {9:f} score {10:f} feature space (max={11:f} mean={12:f} std={13:f} rooms={14:d})]".format(
                     trial,
                     step_counter.steps,
