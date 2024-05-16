@@ -1,11 +1,12 @@
-import time
+import sys
 import torch
 import argparse
 import numpy as np
 import torch.nn as nn
 import lightning as L
+from typing import Dict
 from lightning.fabric import Fabric
-from torch.utils.data import BatchSampler, RandomSampler
+from torch.utils.data import BatchSampler, RandomSampler, DataLoader, Dataset
 from networks.PPO_Modules import TYPE
 from networks.PPO import PPOLightning
 from networks.RNDModelAtari import VICRegModelAtari
@@ -130,6 +131,7 @@ class PPOAtariSNDAgent(nn.Module):
         probs = probs.reshape(-1, *probs.shape[2:])[permutation]
         adv_values = adv_values.reshape(-1, *adv_values.shape[2:])[permutation]
         ref_values = ref_values.reshape(-1, *ref_values.shape[2:])[permutation]
+        # sys.exit()
         batch = {
             "states": states,
             "actions": actions,
@@ -159,31 +161,6 @@ class PPOAtariSNDAgent(nn.Module):
             "next_states": sample.next_state,
         }
         return batch, size
-
-    # def train_ppo(self, batch, sampler):
-    #     for epoch in range(self.algorithm.ppo_epochs):
-    #         # if self.fabric.world_size > 1:
-    #         #     sampler.sampler.set_epoch(epoch)
-    #         for idxs in sampler:
-    #             loss = self.algorithm.training_step(
-    #                 {k: v[idxs] for k, v in batch.items()}
-    #             )
-    #             self.algorithm_optimizer.zero_grad()
-    #             self.fabric.backward(loss)
-    #             self.fabric.clip_gradients(
-    #                 self.algorithm, self.algorithm_optimizer, max_norm=0.5
-    #             )
-    #             self.algorithm_optimizer.step()
-
-    # def train_snd(self, batch, size):
-    #     for i in range(size):
-    #         loss = self.motivation.training_step({k: v[i] for k, v in batch.items()})
-    #         self.motivation_optimizer.zero_grad()
-    #         self.fabric.backward(loss)
-    #         self.fabric.clip_gradients(
-    #             self.motivation, self.motivation_optimizer, max_norm=0.5
-    #         )
-    #         self.motivation_optimizer.step()
 
     def setup_data(self, state0, value, action0, probs0, state1, reward, mask):
         self.memory.add(

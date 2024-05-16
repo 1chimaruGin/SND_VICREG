@@ -241,7 +241,8 @@ class RepeatActionEnv(gym.Wrapper):
     def step(self, action):
         reward, done = 0, False
         for t in range(4):
-            state, r, done, info = self.env.step(action)
+            # state, r, done, info = self.env.step(action)
+            state, r, done, t, info = self.env.step(action)
             if t == 2:
                 self.successive_frame[0] = state
             elif t == 3:

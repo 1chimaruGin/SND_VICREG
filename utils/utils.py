@@ -53,13 +53,13 @@ def get_args():
     )
 
     parser.add_argument(
-        "--env_name", type=str, help="env name ", default="PrivateEyeNoFrameskip-v4"
+        "--env_name", type=str, help="env name ", default="FrostbiteNoFrameskip-v4"
     )
     parser.add_argument("--model", type=str, help="model type", default="snd")
     parser.add_argument("--seed", type=int, help="random seed", default=42)
     parser.add_argument("--type", type=str, help="type of training", default="vicreg")
     parser.add_argument("--n_env", type=int, help="number of environments", default=128)
-    parser.add_argument("--trials", type=int, help="number of trials", default=8)
+    parser.add_argument("--trials", type=int, help="number of trials", default=12)
     parser.add_argument("--steps", type=int, help="number of steps", default=128)
     parser.add_argument("--gamma", type=str, help="gamma values", default="0.998,0.99")
     parser.add_argument("--beta", type=float, help="beta value", default=0.001)
