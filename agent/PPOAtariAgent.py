@@ -6,14 +6,14 @@ import torch.nn as nn
 import lightning as L
 from typing import Dict
 from lightning.fabric import Fabric
-from torch.utils.data import BatchSampler, RandomSampler, DataLoader, Dataset
+from torch.utils.data import BatchSampler, RandomSampler
 from networks.PPO_Modules import TYPE
 from networks.PPO import PPOLightning
 from networks.RNDModelAtari import VICRegModelAtari
 from networks.PPO_AtariModules import PPOAtariNetworkSND
 from networks.SNDMotivation import SNDMotivationLightning
 from utils.ReplayBuffer import GenericTrajectoryBuffer
-from utils.ReplayBuffer import GenericTrajectoryBuffer
+from utils.utils import get_single_device_fabric
 
 
 class PPOAtariSNDAgent(nn.Module):
@@ -208,7 +208,10 @@ def build_agent(
         action_type=action_type,
     )
     agent.network = fabric.setup_module(agent.network)
+    agent.algorithm = fabric.setup_module(agent.algorithm)
+    agent.algorithm.network = fabric.setup_module(agent.algorithm.network)
+
+    fabric = get_single_device_fabric(fabric)
     agent.cnd_model = fabric.setup_module(agent.cnd_model)
     agent.motivation = fabric.setup_module(agent.motivation)
-    agent.algorithm = fabric.setup_module(agent.algorithm)
     return agent

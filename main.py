@@ -33,7 +33,7 @@ def train(
     batch, sampler, motivation_batch, motivation_size = agent.setup_data(*data)
     if batch is not None:
         s1 = time.time()
-        for epoch in range(config.ppo_epochs):
+        for _ in range(config.ppo_epochs):
             for idxs in sampler:
                 loss = agent.algorithm.training_step(
                     {k: v[idxs] for k,v in batch.items()}
