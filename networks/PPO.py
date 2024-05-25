@@ -49,7 +49,7 @@ class PPOLightning(nn.Module):
         self.int_adv_scale = int_adv_scale
         # self.loss_metrics = MeanMetric()
 
-    def calc_loss(self, states, ref_value, adv_value, old_actions, old_probs):
+    def forward(self, states, ref_value, adv_value, old_actions, old_probs):
         values, _, probs = self.network(states)
         if self.motivation:
             ext_value = values[:, 0]
@@ -95,7 +95,7 @@ class PPOLightning(nn.Module):
         probs_v = batch["probs"]
         batch_adv_v = batch["adv_values"]
         batch_ref_v = batch["ref_values"]
-        loss = self.calc_loss(states_v, batch_ref_v, batch_adv_v, actions_v, probs_v)
+        loss = self(states_v, batch_ref_v, batch_adv_v, actions_v, probs_v)
         # self.loss_metrics.update(loss)
         return loss
 

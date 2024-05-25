@@ -210,8 +210,6 @@ def build_agent(
     agent.network = fabric.setup_module(agent.network)
     agent.algorithm = fabric.setup_module(agent.algorithm)
     agent.algorithm.network = fabric.setup_module(agent.algorithm.network)
-
-    fabric = get_single_device_fabric(fabric)
     agent.cnd_model = fabric.setup_module(agent.cnd_model)
     agent.motivation = fabric.setup_module(agent.motivation)
     return agent

@@ -32,7 +32,7 @@ def train(
 ):
     batch, sampler, motivation_batch, motivation_size = agent.setup_data(*data)
     if batch is not None:
-        s1 = time.time()
+        # s1 = time.time()
         for _ in range(config.ppo_epochs):
             for idxs in sampler:
                 loss = agent.algorithm.training_step(
@@ -43,7 +43,7 @@ def train(
                 fabric.clip_gradients(agent.algorithm, opt_algorithm, max_norm=0.5)
                 opt_algorithm.step()
         s2 = time.time()
-        fabric.print(f"[INFO] Step {global_step} PPO time: {s2 - s1}, done")
+        # fabric.print(f"[INFO] Step {global_step} PPO time: {s2 - s1}, done")
 
     if motivation_batch is not None:
         m1 = time.time()

@@ -22,7 +22,7 @@ RUN pip install --no-cache-dir -U pip
 RUN pip install torch==2.2.1 torchvision==0.17.1 --index-url https://download.pytorch.org/whl/cu121
 
 COPY requirements.txt /workspace/requirements.txt
-
+RUN apt-get update && apt-get install -y git
 # Install required packages
 RUN pip install --upgrade pip && \
     pip install --no-cache-dir -r /workspace/requirements.txt

@@ -1,5 +1,7 @@
---find-links https://download.pytorch.org/whl/torch_stable.html
-box2d-py
+# --find-links https://download.pytorch.org/whl/torch_stable.html
+# box2d-py
+lightning
+tensorboard
 etaprogress
 gym[atari]
 gym[accept-rom-license]
